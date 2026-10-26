@@ -1,11 +1,10 @@
 {
-  "R": "R version 4.5.1 (2025-06-13 ucrt)",
-  "packages": {
-    "officer": "0.7.0",
-    "flextable": "0.9.10",
-    "ggplot2": "4.0.0",
-    "jsonlite": "2.0.0",
-    "xml2": "1.4.0",
-    "zip": "2.3.3"
-  }
+  "builder": "scripts/build_word_report.py",
+  "source": "README.md",
+  "source_sha256": "ffd7e6c25b9cc696204f97b464a6520976a00b10cacff3efb21063eb61a64af9",
+  "pandoc": "pandoc 3.8.3",
+  "python_docx": "1.2.0",
+  "author": "Vusumuzi Mabasa",
+  "equations": "Native Office Math (OMML)",
+  "analyses_rerun": false
 }

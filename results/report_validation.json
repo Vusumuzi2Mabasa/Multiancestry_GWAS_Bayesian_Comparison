@@ -1,0 +1,11 @@
+{
+  "pages": 8,
+  "author": "Vusumuzi Mabasa",
+  "figures": 4,
+  "tables": 5,
+  "native_math_objects": 27,
+  "visual_review": "All eight pages inspected; pages 1\u20134 byte-identical to the previously reviewed render. Equations, table widths, captions and figure placement checked.",
+  "numerical_checks": "Primary results and null counts verified against saved TSV files by scripts/validate_report.py.",
+  "scientific_results_unchanged": true,
+  "report_sha256": "a20b8d0222371a8a47cc9beaf91431e1cca25c52e03d64e60b2ef06de8addc46"
+}

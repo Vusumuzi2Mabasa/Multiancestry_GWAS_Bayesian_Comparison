@@ -204,6 +204,20 @@ The simulation uses favourable inputs: a tiny locus, known allele alignment, equ
 
 A broader evaluation would require more independent replicates, calibrated decision thresholds, realistic LD and frequency variation, external-reference mismatch, ancestry-specific inclusion and formal signal matching. These extensions were not tested here.
 
+### Priorities for a stronger benchmark
+
+The following changes would address the main threats to interpretation. They are prospective study recommendations, not completed analyses.
+
+| Priority | Proposed improvement | Evaluation |
+|---|---|---|
+| Comparable decisions | Choose operating thresholds on independent null calibration simulations, then freeze them for held-out evaluation | Recovery at a common locus-level false-selection rate; report uncertainty in that rate |
+| Simulation precision | Increase independent replicates using a prespecified MCSE target | For a binary outcome near 0.5, 1,000 replicates give MCSE about 0.016; rare-event calibration needs substantially more |
+| Reference robustness | Use separate LD panels with varied size and controlled mismatch | Changes in selection, bias and RMSE relative to the in-sample reference |
+| Flexible heterogeneity | Evaluate cohort-specific inclusion states, opposite effects and prior-scale sensitivity | Cohort-specific recovery, effect bias and interval coverage under prespecified alternatives |
+| Appropriate recovery targets | Assess both exact variants and LD-equivalent signals; include an established Bayesian comparator | Signal matching with a predefined LD rule, alongside exact recall and false selections |
+
+Calibration should target a feasible locus-level operating point for this design, rather than imply that a modest simulation can resolve a 5 × 10⁻⁸ error rate. Training or tuning simulations must remain separate from the datasets used to report final performance.
+
 ## Conclusion
 
 The usefulness of cross-population effect borrowing depended on effect similarity and information in the smaller cohort. Recovery, estimation error and ancestry-specific shrinkage offered complementary evidence. This reproducible synthetic study supports examination of modelling assumptions and computational behaviour, not biological conclusions about real populations or a general ranking of methods.
@@ -212,9 +226,9 @@ The usefulness of cross-population effect borrowing depended on effect similarit
 
 The repository includes source code, 1,200 replicate-level method/threshold records, 3,840 Bayesian variant records, summaries, figures and the [Word manuscript](report/Multiancestry_GWAS_Methodology_and_Results.docx). Five reporting combinations were evaluated per dataset: Manc-COJO and two Bayesian correlations at two thresholds. Bayesian thresholds share the same fitted posterior. Generated inputs, detailed logs, third-party executables and machine-specific paths are excluded from Git.
 
-The recorded run used Python 3.12.14, NumPy 2.3.5, Manc-COJO v1.1.0, R 4.3.3 for base summaries and R 4.5.1 for Word authoring. See [runtime_and_validation.json](results/runtime_and_validation.json), [requirements.txt](requirements.txt), [software provenance](tools/provenance.json) and [public checksums](checksums_public.sha256).
+The recorded analysis used Python 3.12.14, NumPy 2.3.5, Manc-COJO v1.1.0 and R 4.3.3 for base summaries. The original figures were authored with R 4.5.1. The current Word report is rendered from this README using Pandoc and python-docx, preserving native editable equations and the order of interpretations and figures. See [analysis provenance](results/runtime_and_validation.json), [report provenance](results/word_report_software.json), [requirements.txt](requirements.txt), [Manc-COJO provenance](tools/provenance.json) and [public checksums](checksums_public.sha256).
 
-Use an existing Python environment with the specified NumPy version and R with `officer`, `flextable`, `ggplot2`, `jsonlite`, `xml2` and `zip`. Obtain the appropriate executable from the [official release](https://github.com/light156/multi-ancestry-COJO/releases/tag/v1.1.0). Scripts do not install dependencies. From the repository root:
+Use an existing Python environment with the dependencies in `requirements.txt`, Pandoc (also distributed with Quarto), and R. Regenerating the publication figures additionally requires `ggplot2` and `jsonlite`. Obtain Manc-COJO from the [official release](https://github.com/light156/multi-ancestry-COJO/releases/tag/v1.1.0). Scripts do not install dependencies. From the repository root:
 
 ```bash
 python scripts/validate.py
@@ -226,9 +240,12 @@ python scripts/simulate_compare.py --replicates 20 --seed 20261026 --manc tools/
 # python scripts/simulate_compare.py --replicates 20 --seed 20261026 --manc tools/manc_cojo_win.exe
 
 Rscript scripts/report.R
-Rscript scripts/build_word_report.R
+Rscript scripts/build_figures.R
+python scripts/build_word_report.py
 python scripts/audit_results.py
 ```
+
+For a report-only update, run `python scripts/build_word_report.py --pandoc /path/to/pandoc` against the saved results and figures. The R entry point `Rscript scripts/build_word_report.R` remains available; set `PYTHON` and `PANDOC` if those executables are not on PATH. Editing the README and rebuilding the Word report keeps their scientific narrative synchronised without rerunning the analysis.
 
 Simulation commands replace generated inputs and results in this checkout. Omitting `--manc` produces status `BAYES_ONLY_MANC_NOT_RUN`, not a completed comparison. To add Manc-COJO to existing generated datasets, run `python scripts/run_manc_existing.py --manc tools/manc_cojo_win.exe` on Windows, or supply the Linux executable on Linux, then regenerate summaries and the Word report.
 
