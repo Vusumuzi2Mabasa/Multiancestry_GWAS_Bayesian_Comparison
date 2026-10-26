@@ -1,0 +1,30 @@
+# Reproducible generated simulation inputs and detailed run logs
+data/
+logs/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+
+# Obtain third party executables from their official release
+tools/*.exe
+tools/manc_cojo
+tools/help.txt
+tools/INSTALL_PLAN.md
+
+# Machine specific metadata and local full input manifest
+results/config.json
+results/environment_and_audit.json
+results/R_sessionInfo.txt
+report/R_report_sessionInfo.txt
+report/.raw_before_style.docx
+checksums.sha256
+
+# Temporary files and credentials
+tmp/
+.env
+.Renviron
+.Rhistory
+.RData
+*.key
+*.pem
+~$*

@@ -1,0 +1,33 @@
+{
+  "seed": 20261026,
+  "replicates": 20,
+  "n_eur": 2000,
+  "n_afr": [
+    250,
+    500,
+    1000,
+    2000
+  ],
+  "markers": 8,
+  "scenarios": [
+    "shared",
+    "heterogeneous",
+    "null"
+  ],
+  "rho_genotype_EUR": 0.8,
+  "rho_genotype_AFR": 0.35,
+  "bayes_tau": 0.15,
+  "bayes_inclusion_prior": 0.2,
+  "bayes_effect_correlations": [
+    0,
+    0.8
+  ],
+  "pip_thresholds": [
+    0.5,
+    0.95
+  ],
+  "cojo_p": 5e-08,
+  "manc_binary": "tools/manc_cojo_win.exe",
+  "manc_sha256": "4cab4da95e481c5f35bb365a721c696b21ce3aa07c2c32e6e01ab45feb51f3f9",
+  "description": "Synthetic paired pilot; no real participant data"
+}

@@ -1,0 +1,11 @@
+{
+  "R": "R version 4.5.1 (2025-06-13 ucrt)",
+  "packages": {
+    "officer": "0.7.0",
+    "flextable": "0.9.10",
+    "ggplot2": "4.0.0",
+    "jsonlite": "2.0.0",
+    "xml2": "1.4.0",
+    "zip": "2.3.3"
+  }
+}

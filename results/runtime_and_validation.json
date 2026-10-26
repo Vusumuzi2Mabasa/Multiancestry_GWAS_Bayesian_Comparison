@@ -1,0 +1,16 @@
+{
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "numpy": "2.3.5",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "paired_datasets": 240,
+  "methods": [
+    "Bayes_rho0.8_PIP0.5",
+    "Bayes_rho0.8_PIP0.95",
+    "Bayes_rho0_PIP0.5",
+    "Bayes_rho0_PIP0.95",
+    "Manc_COJO"
+  ],
+  "checks": "Complete paired rows, finite MSE, PIP range, actual command logs, allele orientation and selected joint p-values",
+  "R_summary_version": "4.3.3",
+  "R_word_report_version": "4.5.1"
+}

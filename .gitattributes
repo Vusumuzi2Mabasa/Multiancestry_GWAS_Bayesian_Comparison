@@ -1,0 +1,4 @@
+# Preserve byte-for-byte hashes of the published scientific artifacts.
+* -text
+*.docx binary
+*.png binary
