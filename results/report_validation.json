@@ -1,21 +1,26 @@
 {
   "author": "Vusumuzi Mabasa",
-  "source_sha256": "243570e7d14e71534a984b10e513f9138062726600171376e49e42bd6d64c74b",
-  "word_sha256": "16d68202318a5cae9283aca33887e70e93aa68c7bacba05555dfcc9f32a69d28",
-  "pages": 12,
-  "rendered_pages_inspected": 12,
-  "renderer": "Microsoft Word PDF export and bundled Poppler",
+  "source_sha256": "14f83866126f7e891344fb71f53fdaa22d8d1a61a8bd64daa808c48967e9604e",
+  "word_sha256": "7c5b4386ec4ea154dad7417b69a27a3a51ba1be5f6225cdc353c9fff41f6fc8f",
+  "pages": 14,
+  "rendered_pages_inspected": 14,
+  "renderer": "LibreOffice 26.2.4 portable, packaged render_docx.py and Poppler",
   "visual_checks": {
     "no_clipping": true,
     "no_overlaps": true,
     "no_missing_glyphs": true,
     "figures_readable": true,
-    "repeated_table_headers": true,
-    "comparison_rows_kept_in_groups": true,
-    "page_numbers": true
+    "native_tables_readable": true,
+    "interpretations_before_figures": true,
+    "page_numbers": true,
+    "hyperlinks_render_correctly": true
   },
-  "main_figures": 4,
-  "tables": 5,
-  "native_math_objects": 48,
+  "formatting_repairs": [
+    "Rebuilt tables with native Word cell widths and standard styles",
+    "Defined Pandoc paragraph and hyperlink styles to prevent importer placeholders"
+  ],
+  "main_figures": 7,
+  "tables": 6,
+  "native_math_objects": 64,
   "all_passed": true
 }

@@ -9,11 +9,21 @@ from docx import Document
 from docx.shared import Inches, Pt, RGBColor
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
+from docx.enum.style import WD_STYLE_TYPE
 
 ROOT=Path(__file__).resolve().parents[1]
 
 def reference(path):
     d=Document();sec=d.sections[0]
+    # Define styles referenced by Pandoc so Word and LibreOffice resolve them alike.
+    for name in ['First Paragraph','Compact','Source Code']:
+        if name not in d.styles:
+            style=d.styles.add_style(name,WD_STYLE_TYPE.PARAGRAPH)
+            style.base_style=d.styles['Normal']
+    if 'Hyperlink' not in d.styles:
+        style=d.styles.add_style('Hyperlink',WD_STYLE_TYPE.CHARACTER)
+        style.font.color.rgb=RGBColor(0,70,130)
+        style.font.underline=True
     sec.page_width=Inches(8.27);sec.page_height=Inches(11.69)
     sec.top_margin=sec.bottom_margin=Inches(.7)
     sec.left_margin=sec.right_margin=Inches(.72)
@@ -42,7 +52,7 @@ def main():
     text=re.sub(r'(?<!!)\[([^]]+)\]\((?!https?://|#)([^)]+)\)',
         r'[\1](https://github.com/Vusumuzi2Mabasa/Multiancestry_GWAS_Bayesian_Comparison/blob/main/\2)',text)
     # Standard Markdown plus TeX math lets Pandoc emit native Office Math.
-    text=re.sub(r'!\[([^]]+)\]\(([^)]+)\)',r'![\1](\2){width=5.9in}',text)
+    text=re.sub(r'!\[([^]]+)\]\(([^)]+)\)',r'![\1](\2){width=6.6in}',text)
     out=ROOT/'report/Multiancestry_GWAS_Methodology_and_Results.docx'
     out.parent.mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory() as temp:
@@ -51,7 +61,7 @@ def main():
         subprocess.run([args.pandoc,str(md),'--from=markdown-implicit_figures+tex_math_dollars','--to=docx','--shift-heading-level-by=-1',
             '--resource-path='+str(ROOT),'--reference-doc='+str(ref),
             '--metadata=title:'+title,'--metadata=author:Vusumuzi Mabasa',
-            '--metadata=subtitle:Reference informed simulation comparison with independent null calibration',
+            '--metadata=subtitle:Public reference simulation with sensitivity analyses and independent INLA validation',
             '--output='+str(out)],cwd=ROOT,check=True)
     d=Document(out);d.core_properties.author='Vusumuzi Mabasa';d.core_properties.title=title
     for p in d.paragraphs:
@@ -63,6 +73,16 @@ def main():
             p.paragraph_format.line_spacing=1
             for run in p.runs:
                 run.font.name='Consolas';run.font.size=Pt(9.5);run.font.color.rgb=RGBColor(0,0,0)
+    # Rebuild Pandoc tables with complete native Word cell widths and standard styles.
+    # This avoids importer-dependent placement of table text in LibreOffice.
+    for old in list(d.tables):
+        table=d.add_table(rows=len(old.rows), cols=len(old.columns))
+        table.style='Table Grid'
+        for src_row,dst_row in zip(old.rows,table.rows):
+            for src,dst in zip(src_row.cells,dst_row.cells):
+                dst.text=src.text
+        old._tbl.addprevious(table._tbl)
+        old._tbl.getparent().remove(old._tbl)
     for table in d.tables:
         table.autofit=True
         borders=OxmlElement('w:tblBorders')
@@ -70,16 +90,18 @@ def main():
             e=OxmlElement('w:'+side)
             for k,v in [('val','single'),('sz','4'),('color','D9D9D9')]:e.set(qn('w:'+k),v)
             borders.append(e)
-        table._tbl.tblPr.append(borders)
+        prior=table._tbl.tblPr.find(qn('w:tblBorders'))
+        if prior is not None:table._tbl.tblPr.remove(prior)
+        table._tbl.tblPr.insert_element_before(borders,'w:shd','w:tblLayout','w:tblCellMar','w:tblLook')
         for i,row in enumerate(table.rows):
             props=row._tr.get_or_add_trPr();props.append(OxmlElement('w:cantSplit'))
-            if i==0:props.append(OxmlElement('w:tblHeader'))
+            if i==0 and props.find(qn('w:tblHeader')) is None:props.append(OxmlElement('w:tblHeader'))
             for cell in row.cells:
                 cell.vertical_alignment=1
                 if i==0:
-                    shade=OxmlElement('w:shd');shade.set(qn('w:fill'),'E8EFF4');cell._tc.get_or_add_tcPr().append(shade)
+                    shade=OxmlElement('w:shd');shade.set(qn('w:fill'),'E8EFF4');cell._tc.get_or_add_tcPr().insert_element_before(shade,'w:noWrap','w:tcMar','w:textDirection','w:tcFitText','w:vAlign')
                 for p in cell.paragraphs:
-                    if len(table.rows)<=8 or (len(table.rows)==17 and (i==0 or i%4!=0)):
+                    if len(table.rows)<=10 or (len(table.rows)==17 and (i==0 or i%4!=0)):
                         p.paragraph_format.keep_with_next=True
                     p.paragraph_format.space_before=Pt(3);p.paragraph_format.space_after=Pt(3)
                     for r in p.runs:r.font.size=Pt(9);r.bold=(i==0)
@@ -97,7 +119,8 @@ def main():
         'pandoc':subprocess.check_output([args.pandoc,'--version'],text=True).splitlines()[0],
         'python_docx':docx.__version__, 'author':'Vusumuzi Mabasa',
         'equations':'Native Office Math (OMML)',
-        'analysis_validation':'results/extension/validation.json'},indent=2)+'\n',encoding='utf-8')
+        'analysis_validation':'results/revision/baseline_gate.json',
+        'inla_validation':'results/revision/inla/validation.json'},indent=2)+'\n',encoding='utf-8')
     print(out)
 
 if __name__=='__main__':main()

@@ -1,0 +1,8 @@
+{
+  "code_sha256": "d836facb3635ec8017ca427aa79b65aa9483178c817635e7be46247389ecb1f0",
+  "threshold_sha256": "7262c28e4b230240b335a72835196e68a01b2b83106d7cc59766cba5f1031e02",
+  "calibration_datasets": 200,
+  "evaluation_datasets": 220,
+  "method_arms": 35,
+  "all_metrics": 7700
+}

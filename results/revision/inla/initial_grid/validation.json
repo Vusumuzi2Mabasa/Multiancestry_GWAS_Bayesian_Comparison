@@ -1,0 +1,10 @@
+{
+  "passed": false,
+  "fixed_cases": 24,
+  "adaptive_cases": 48,
+  "max_mean_error": 0.1155317722538147,
+  "max_sd_relative_error": 0.18385322595538245,
+  "baseline_gate_sha256": "c845e4ae87c8e5131c8bdbf3d7ce2a998f005da1eb53e85d151973f1791e4c08",
+  "inla_r_sha256": "63230ce4ad33e408c431cc79f0eade6b55b0bdce74c09ac862e0993ade828a0f",
+  "extension_code_sha256": "9de322a9f0476ecd3c131665116fe00bf0cbac06f49376beb98e2628cb610dd5"
+}

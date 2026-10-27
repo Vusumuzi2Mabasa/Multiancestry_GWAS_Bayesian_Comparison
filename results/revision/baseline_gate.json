@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "baseline_completed_before_inla": true,
+  "evaluation_datasets": 4480,
+  "sensitivity_evaluation_datasets": 880,
+  "validation_evaluation_datasets": 3600,
+  "calibration_datasets": 3200,
+  "unique_summary_fingerprints": 4480,
+  "nonconverged": 0,
+  "actual_manc": 8310,
+  "screened_manc": 5050,
+  "completion_hashes": {
+    "results\\revision\\sensitivity\\r0_LWK\\complete.json": "502ec9f7cb0f7f3dbcadbd995c6085ffcea93dbf2eb148211ce670c44096fd85",
+    "results\\revision\\sensitivity\\r0_YRI\\complete.json": "14d5c0cc969f96b6ba0a89b70a3e50e24c15ae9868ab229083dcb5e8f5670c5a",
+    "results\\revision\\sensitivity\\r4_LWK\\complete.json": "f03c8326352951ac85d1881ccfd173fadcd02a4d5b95d0ddba13e5bccb6df374",
+    "results\\revision\\sensitivity\\r4_YRI\\complete.json": "5c8fb1dddc5ba211e4b6d2cf56b3046ddc676e61363de7f61a5c82bda41e9087",
+    "results\\revision\\validation\\r0_LWK\\complete.json": "4cc120f06cb7cdf8f7e1e5f1e124c69ed49f262f83dea4880a4ab1d2d2d608f8",
+    "results\\revision\\validation\\r0_YRI\\complete.json": "6bf32a4a165fc21188f81ab11167f351201b3f154d64d2227e9ac0ae6c4b7c9a",
+    "results\\revision\\validation\\r1_LWK\\complete.json": "bb7a6b2d3500e0a46976dafda7374acc45f5323ff3d00267222887f9c2e28885",
+    "results\\revision\\validation\\r1_YRI\\complete.json": "f20d8f9f45e973b2c156cffd52b3e2ed4e6d301bebbb89f26e76fac720fca86d",
+    "results\\revision\\validation\\r2_LWK\\complete.json": "15d898108ff35cb3bf23185961d0ab68ae47718126e9f220ca172bf1b9154b46",
+    "results\\revision\\validation\\r2_YRI\\complete.json": "75e63995b21d9961def20e7939bbd61c0bd42c32b669f5ee73196a588f214a2a",
+    "results\\revision\\validation\\r3_LWK\\complete.json": "f342009f4219753c97eb9740d30423179f89bdc6b1b44a43874148435ecc311a",
+    "results\\revision\\validation\\r3_YRI\\complete.json": "2871fcb7a89af2024eb90f98bc3e2ef40c191b2af996f451757064a5fdb69090",
+    "results\\revision\\validation\\r4_LWK\\complete.json": "1c289d9923d4fdace0543cf27dc5afe63066f21eefc7b9ab62315af3053ec2b1",
+    "results\\revision\\validation\\r4_YRI\\complete.json": "02305d212e240f83877b1ecadb760cfb40392f1930edfbc1391878bfba90b09e",
+    "results\\revision\\validation\\r5_LWK\\complete.json": "8e6ba17b56f1fb6f9a71c6a99842f585c7e135434c97c9a7043d5ccd5ce54110",
+    "results\\revision\\validation\\r5_YRI\\complete.json": "08bfb248d4e64120888764643c1e6fd0d5bd23329639bf845dbf733bb290c1ff"
+  },
+  "calibration_nonconverged": 0,
+  "audit_utc": "2026-10-27T05:51:51.192241+00:00",
+  "code_sha256": "d836facb3635ec8017ca427aa79b65aa9483178c817635e7be46247389ecb1f0"
+}

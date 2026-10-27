@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "exact_enumeration_tolerance": 1e-10,
+  "multisusie_api_tolerance": 1e-07,
+  "bed_native_manc_tolerance": 1e-05,
+  "atom_quantiles": true,
+  "allele_flip_invariance": true,
+  "manc_entry_boundary": true
+}

@@ -1,0 +1,105 @@
+{
+  "code_sha256": "d836facb3635ec8017ca427aa79b65aa9483178c817635e7be46247389ecb1f0",
+  "seed": 27102802,
+  "rank": 191,
+  "cutoffs": {
+    "0": 0.5759242169232622,
+    "1": 0.6027018381625063,
+    "2": 0.7990545245946891,
+    "3": 2.056346810056549,
+    "4": 0.6815202264743363,
+    "5": 0.6502410642214056,
+    "6": 0.8182706380967967,
+    "7": 2.056346810056549
+  },
+  "arms": [
+    {
+      "method": "Exact",
+      "ld": "in_sample",
+      "variance": "total",
+      "rho": 0,
+      "tau": 0.15,
+      "pi": 0.2,
+      "L": 5,
+      "freq": 0.2,
+      "arm": 0
+    },
+    {
+      "method": "Exact",
+      "ld": "in_sample",
+      "variance": "total",
+      "rho": 0.8,
+      "tau": 0.15,
+      "pi": 0.2,
+      "L": 5,
+      "freq": 0.2,
+      "arm": 1
+    },
+    {
+      "method": "MultiSuSiE",
+      "ld": "in_sample",
+      "variance": "total",
+      "rho": 0.75,
+      "tau": 0.15,
+      "pi": 0.2,
+      "L": 5,
+      "freq": 0.2,
+      "arm": 2
+    },
+    {
+      "method": "Manc",
+      "ld": "in_sample",
+      "variance": "total",
+      "rho": 0,
+      "tau": 0.15,
+      "pi": 0.2,
+      "L": 5,
+      "freq": 0.2,
+      "arm": 3
+    },
+    {
+      "method": "Exact",
+      "ld": "matched",
+      "variance": "total",
+      "rho": 0,
+      "tau": 0.15,
+      "pi": 0.2,
+      "L": 5,
+      "freq": 0.2,
+      "arm": 4
+    },
+    {
+      "method": "Exact",
+      "ld": "matched",
+      "variance": "total",
+      "rho": 0.8,
+      "tau": 0.15,
+      "pi": 0.2,
+      "L": 5,
+      "freq": 0.2,
+      "arm": 5
+    },
+    {
+      "method": "MultiSuSiE",
+      "ld": "matched",
+      "variance": "total",
+      "rho": 0.75,
+      "tau": 0.15,
+      "pi": 0.2,
+      "L": 5,
+      "freq": 0.2,
+      "arm": 6
+    },
+    {
+      "method": "Manc",
+      "ld": "matched",
+      "variance": "total",
+      "rho": 0,
+      "tau": 0.15,
+      "pi": 0.2,
+      "L": 5,
+      "freq": 0.2,
+      "arm": 7
+    }
+  ]
+}
