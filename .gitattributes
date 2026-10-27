@@ -1,4 +1,6 @@
 # Preserve byte-for-byte hashes of the published scientific artifacts.
 * -text
+*.tsv -whitespace
+*.json -whitespace
 *.docx binary
 *.png binary

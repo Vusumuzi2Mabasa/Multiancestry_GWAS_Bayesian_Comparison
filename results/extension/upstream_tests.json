@@ -1,0 +1,10 @@
+{
+  "package": "MultiSuSiE",
+  "commit": "a89e091d45297d983118438f116c3eb5bc1219ed",
+  "test_files": ["test_bayes_factor_math.py", "test_recovery_utils.py", "test_individual_vs_rss_consistency.py"],
+  "passed": 11,
+  "failed": 0,
+  "warnings": 2,
+  "warning_context": "NumPy correlation division warnings in upstream fixtures with constant genotype columns",
+  "test_scope": "Selected upstream numerical tests, not the entire upstream test suite"
+}

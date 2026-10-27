@@ -1,0 +1,12 @@
+{
+  "cell_id": 15,
+  "thresholds": {
+    "Bayes rho 0": 0.7490353332571619,
+    "Bayes rho 0.8": 0.689446789844841,
+    "MultiSuSiE": 0.7388887112831354,
+    "Manc-COJO": 2.1044095044426316
+  },
+  "calibration_replicates": 300,
+  "rule": "score strictly exceeds order statistic ceil((B+1)*0.95)",
+  "design_code_sha256": "54d8602c8d3700ea6d7f2aa1533e9514a6956b40494616ffdf46b5cd1ee5a13b"
+}

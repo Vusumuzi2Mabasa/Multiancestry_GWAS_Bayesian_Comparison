@@ -51,20 +51,18 @@ def main():
         subprocess.run([args.pandoc,str(md),'--from=markdown-implicit_figures+tex_math_dollars','--to=docx','--shift-heading-level-by=-1',
             '--resource-path='+str(ROOT),'--reference-doc='+str(ref),
             '--metadata=title:'+title,'--metadata=author:Vusumuzi Mabasa',
-            '--metadata=subtitle:A paired comparison of Manc-COJO and Bayesian hierarchical variable selection',
+            '--metadata=subtitle:Reference informed simulation comparison with independent null calibration',
             '--output='+str(out)],cwd=ROOT,check=True)
     d=Document(out);d.core_properties.author='Vusumuzi Mabasa';d.core_properties.title=title
     for p in d.paragraphs:
-        if p.style.name=='Heading 1' and p.text in ['Methods','Results','Discussion','Reproducibility']:p.paragraph_format.page_break_before=True
         if p.style.name.startswith('Heading'):p.paragraph_format.keep_with_next=True
         if p._p.xpath('.//w:drawing'):p.paragraph_format.keep_with_next=True
         if p.text.startswith(('Figure ','Table ')):
             p.paragraph_format.space_after=Pt(8)
-        if p.style.name=='Heading 2' and p.text in [
-            'The benefit of borrowing depended on effect similarity']:
-            p.paragraph_format.page_break_before=True
-        if p.text.startswith('Strong borrowing attenuated the AFR-specific effect'):
-            p.paragraph_format.page_break_before=True
+        if p.style.name=='Source Code':
+            p.paragraph_format.line_spacing=1
+            for run in p.runs:
+                run.font.name='Consolas';run.font.size=Pt(9.5);run.font.color.rgb=RGBColor(0,0,0)
     for table in d.tables:
         table.autofit=True
         borders=OxmlElement('w:tblBorders')
@@ -81,9 +79,16 @@ def main():
                 if i==0:
                     shade=OxmlElement('w:shd');shade.set(qn('w:fill'),'E8EFF4');cell._tc.get_or_add_tcPr().append(shade)
                 for p in cell.paragraphs:
+                    if len(table.rows)<=8 or (len(table.rows)==17 and (i==0 or i%4!=0)):
+                        p.paragraph_format.keep_with_next=True
                     p.paragraph_format.space_before=Pt(3);p.paragraph_format.space_after=Pt(3)
                     for r in p.runs:r.font.size=Pt(9);r.bold=(i==0)
     for e in list(d.styles.element.iter(qn('w:pBdr'))):e.getparent().remove(e)
+    for section in d.sections:
+        footer=section.footer.paragraphs[0];footer.alignment=2
+        d.styles['Footer'].font.size=Pt(9)
+        run=footer.add_run('Page ');run.font.size=Pt(9)
+        field=OxmlElement('w:fldSimple');field.set(qn('w:instr'),'PAGE');footer._p.append(field)
     d.save(out)
     import docx
     (ROOT/'results/word_report_software.json').write_text(json.dumps({
@@ -91,7 +96,8 @@ def main():
         'source_sha256':hashlib.sha256(source.encode()).hexdigest(),
         'pandoc':subprocess.check_output([args.pandoc,'--version'],text=True).splitlines()[0],
         'python_docx':docx.__version__, 'author':'Vusumuzi Mabasa',
-        'equations':'Native Office Math (OMML)','analyses_rerun':False},indent=2)+'\n',encoding='utf-8')
+        'equations':'Native Office Math (OMML)',
+        'analysis_validation':'results/extension/validation.json'},indent=2)+'\n',encoding='utf-8')
     print(out)
 
 if __name__=='__main__':main()

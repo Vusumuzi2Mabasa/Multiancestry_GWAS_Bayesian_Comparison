@@ -1,0 +1,14 @@
+{
+  "checks": {
+    "finite_rank_cutoff": true,
+    "ties_conservative": true,
+    "CEU_summary_reconstruction": true,
+    "YRI_summary_reconstruction": true,
+    "bayesian_outputs_finite": true,
+    "manc_first_entry_boundary": true,
+    "multisusie_converged": true
+  },
+  "bayesian_three_fits_seconds": 46.79214549995959,
+  "multisusie_iterations": 7,
+  "all_passed": true
+}

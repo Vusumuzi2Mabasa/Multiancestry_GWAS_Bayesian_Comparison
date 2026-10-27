@@ -1,0 +1,27 @@
+Third-party methods and reference data
+
+Manc-COJO v1.1.0
+Source: https://github.com/light156/multi-ancestry-COJO
+License: MIT; copyright 2026 Yong Wang.
+The executable is downloaded from the authors' official release and is not
+redistributed in this repository. See tools/provenance.json for its identity.
+
+MultiSuSiE
+Source: https://github.com/jordanero/MultiSuSiE
+Pinned revision: a89e091d45297d983118438f116c3eb5bc1219ed
+License: GNU General Public License version 3.
+Installed as an external dependency; its source is not vendored here.
+Please cite Rossen et al., doi:10.1038/s41588-025-02450-5.
+
+1000 Genomes Phase 3
+Source: https://www.internationalgenome.org/
+Reuse statement: https://www.internationalgenome.org/IGSR_disclaimer/
+The published Phase 3 data are available without embargo. Cite the 1000
+Genomes Project Consortium, doi:10.1038/nature15393. Other IGSR collections
+can have different terms; this workflow does not assume the same terms for
+all IGSR resources. Raw reference genotypes are downloaded locally and are
+not included in this repository.
+
+The custom hierarchical model and simulation scripts are distinct from
+the published Manc-COJO and MultiSuSiE implementations. Scientific citations
+and software provenance are supplied in the research manuscript.

@@ -1,0 +1,9 @@
+{
+  "donor_overlap": 0,
+  "windows": 2,
+  "markers_per_window": 8,
+  "build": "GRCh37",
+  "allele_dosage": "ALT",
+  "phase_complete": true,
+  "source": "1000 Genomes Phase 3 v5b"
+}

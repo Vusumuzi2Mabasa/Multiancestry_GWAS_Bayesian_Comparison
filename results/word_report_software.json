@@ -1,10 +1,10 @@
 {
   "builder": "scripts/build_word_report.py",
   "source": "README.md",
-  "source_sha256": "ffd7e6c25b9cc696204f97b464a6520976a00b10cacff3efb21063eb61a64af9",
+  "source_sha256": "243570e7d14e71534a984b10e513f9138062726600171376e49e42bd6d64c74b",
   "pandoc": "pandoc 3.8.3",
   "python_docx": "1.2.0",
   "author": "Vusumuzi Mabasa",
   "equations": "Native Office Math (OMML)",
-  "analyses_rerun": false
+  "analysis_validation": "results/extension/validation.json"
 }

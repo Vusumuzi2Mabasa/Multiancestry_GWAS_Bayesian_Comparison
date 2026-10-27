@@ -1,11 +1,21 @@
 {
-  "pages": 8,
   "author": "Vusumuzi Mabasa",
-  "figures": 4,
+  "source_sha256": "243570e7d14e71534a984b10e513f9138062726600171376e49e42bd6d64c74b",
+  "word_sha256": "16d68202318a5cae9283aca33887e70e93aa68c7bacba05555dfcc9f32a69d28",
+  "pages": 12,
+  "rendered_pages_inspected": 12,
+  "renderer": "Microsoft Word PDF export and bundled Poppler",
+  "visual_checks": {
+    "no_clipping": true,
+    "no_overlaps": true,
+    "no_missing_glyphs": true,
+    "figures_readable": true,
+    "repeated_table_headers": true,
+    "comparison_rows_kept_in_groups": true,
+    "page_numbers": true
+  },
+  "main_figures": 4,
   "tables": 5,
-  "native_math_objects": 27,
-  "visual_review": "All eight pages inspected; pages 1\u20134 byte-identical to the previously reviewed render. Equations, table widths, captions and figure placement checked.",
-  "numerical_checks": "Primary results and null counts verified against saved TSV files by scripts/validate_report.py.",
-  "scientific_results_unchanged": true,
-  "report_sha256": "a20b8d0222371a8a47cc9beaf91431e1cca25c52e03d64e60b2ef06de8addc46"
+  "native_math_objects": 48,
+  "all_passed": true
 }

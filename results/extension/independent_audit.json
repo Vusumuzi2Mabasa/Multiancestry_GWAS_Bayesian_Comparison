@@ -1,0 +1,16 @@
+{
+  "all_passed": true,
+  "cells": 16,
+  "unique_dataset_random_states": 11200,
+  "method_fit_counts": {
+    "null": 12800,
+    "shared": 6400,
+    "heterogeneous": 6400
+  },
+  "frozen_threshold_hashes": true,
+  "quantiles_recomputed": true,
+  "variant_decisions_recomputed": true,
+  "effect_mse_recomputed": true,
+  "manc_entry_implication_checked": true,
+  "all_replicates_present": true
+}

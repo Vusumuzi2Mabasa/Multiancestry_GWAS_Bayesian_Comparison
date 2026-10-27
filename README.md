@@ -1,259 +1,319 @@
-# Cross-population borrowing and effect heterogeneity in simulated genetic association studies
+# External African LD references and Bayesian borrowing in simulated multiancestry association studies
 
 **Vusumuzi Mabasa**
 
-**A paired comparison of Manc-COJO and Bayesian hierarchical variable selection**
+**A calibrated comparison of conditional association and Bayesian variable selection**
 
-All participants, genotypes and phenotypes are synthetic. EUR and AFR label simplified simulation settings, not sampled populations or the diversity within ancestry groups. No AWI-Gen or other participant-level research data were used.
+This is a simulation study. Local haplotypes originate from public 1000 Genomes reference participants; study individuals are resampled haplotype pairs and every phenotype is simulated. No AWI-Gen data or observed clinical outcomes were analysed. YRI and LWK identify specific reference populations and do not represent the diversity of Africa.
 
-[Word manuscript](report/Multiancestry_GWAS_Methodology_and_Results.docx) · [Results tables](results/summary.tsv) · [Paired comparisons](results/paired_differences.tsv) · [Reproduce the study](#reproducibility)
+[Word manuscript](report/Multiancestry_GWAS_Methodology_and_Results.docx) · [Design](extension/design.json) · [Results](results/extension/summary.tsv) · [Per-cell results](results/extension/cell_summary.tsv) · [Validation](results/extension/validation.json)
 
 ## Abstract
 
-**Background.** Combining association evidence across populations can improve inference when effects are shared, but borrowing may distort effects that differ between populations. Unequal sample sizes and linkage disequilibrium (LD) complicate this trade-off.
+**Background.** External linkage disequilibrium (LD) panels can make multi-population analyses possible without sharing study genotypes, but reference sampling and population mismatch can change signal recovery. Correlated effect priors introduce an additional trade-off when genetic effects differ across populations.
 
-**Methods.** We evaluated 240 paired dataset settings spanning three effect scenarios, four smaller-cohort sample sizes and 20 replicates per setting. Each dataset contained eight variants in two LD blocks. The EUR-labelled cohort contained 2,000 individuals; AFR-labelled samples contained 250–2,000. The official Manc-COJO v1.1.0 executable was compared with a custom Bayesian model using shared variant inclusion and effect correlations of 0 or 0.8. Both approaches received the same marginal statistics and in-sample LD.
+**Methods.** We resampled phased chromosome 22 haplotypes from CEU, YRI and LWK reference participants after splitting each population into disjoint study-generating and external-reference donor pools. Two prespecified 100 kb windows each contributed eight quality-controlled variants. Sixteen design cells combined locus, African reference population, African cohort size and reference condition. Each cell used 300 independent null datasets to calibrate a 5% locus false-selection target, followed by 200 held-out null, 100 shared-effect and 100 heterogeneous-effect datasets. The official Manc-COJO v1.1.0 executable, the published MultiSuSiE implementation and two custom Bayesian priors received the same marginal summaries and external LD.
 
-**Results.** With shared effects and AFR sample size 250, strong borrowing reduced AFR effect RMSE from 0.050 to 0.039 relative to the uncorrelated-effect prior. Under heterogeneous effects, RMSE instead increased from 0.078 to 0.086. For an AFR-specific variant with true effect 0.28, mean posterior effects were 0.103 without effect correlation and 0.061 with strong borrowing. Recovery improved with sample size. No null false selections occurred under the primary thresholds, but only 20 null replicates were available per sample size.
+**Results.** Across sample-size, reference and method groups, held-out null false-selection estimates ranged from 3.5%–6.6%. Under shared effects at African cohort size 250 with matched references, exact recall ranged from 0.976 to 0.985. Mean false discovery proportion was 0.014 for MultiSuSiE, 0.264 for Manc-COJO and 0.289–0.302 for the custom models. Under heterogeneous effects, exact recall ranged from 0.574 to 0.634. All 6,400 MultiSuSiE evaluation fits met the package convergence criterion.
 
-**Conclusion.** Borrowing improved estimation when its assumptions matched the generating model and increased shrinkage of a population-specific effect when they did not. Differing selection thresholds and objectives preclude a general claim of method superiority.
+**Conclusion.** Calibrating global-null decisions did not ensure low false discovery proportions in the presence of true signals. MultiSuSiE offered a more favourable recovery–false-discovery trade-off in the shared-effect example. These findings are conditional on two small reference panels and the simulation model; they do not establish genome-wide error control or clinical validity.
 
 ## Introduction
 
-Multi-population association analyses balance shared evidence against effect heterogeneity. A larger cohort may stabilise estimates in a smaller cohort, while differences in LD alter how marginal associations identify underlying signals. Strong similarity assumptions can also attenuate effects present primarily in the smaller cohort.
+Multiancestry summary-statistic analyses combine evidence generated under different allele frequencies, LD structures and cohort sizes. Conditional association methods seek independent signals, while Bayesian fine-mapping methods assign posterior support to candidate variants. Their objectives overlap but differ, making direct comparisons sensitive to both the statistical model and the decision threshold.
 
-This study examines how sample size, LD and an explicit borrowing prior affect signal recovery and estimation when the truth is known. Manc-COJO provides the conditional-and-joint association comparator. The Bayesian analysis is a custom, exactly enumerated variable-selection model, not an implementation of MESuSiE or a validated new fine-mapping method. The objective is to characterise small-locus behaviour under controlled assumptions rather than benchmark genome-wide performance.
+We assessed exact signal recovery and effect estimation in simulated studies derived from public CEU, YRI and LWK haplotypes. The design separates external reference donors from study-generating donors, contrasts shared and heterogeneous effects, and examines both population-matched and population-swapped references. We compared conditional association with MultiSuSiE and a custom hierarchical variable-selection model at independently calibrated locus-level decision thresholds. The working hypothesis was that correlated effect priors would help when effects were shared, while reference mismatch and population-specific effects could reduce this benefit.
+
+Wang and colleagues introduced Manc-COJO and Manc-COJO:FIX and evaluated multiancestry conditional analysis against GCTA-based strategies. We use the released Manc-COJO software in an independent simulation. The present study does not reproduce their genome-wide simulations, real lipid GWAS analyses, FIX analysis or speed comparisons. It addresses the narrower question of recovery and estimation under reference-informed LD, unequal cohort sizes and calibrated decisions.
 
 ## Methods
 
-### Simulation design
+### Reference data and donor separation
 
-The design is recorded in [study_config.json](results/study_config.json); the generator and estimators are implemented in [simulate_compare.py](scripts/simulate_compare.py).
+The source is the 1000 Genomes Phase 3 GRCh37 chromosome 22 v5b callset with the 20130502 integrated sample panel. YRI denotes Yoruba in Ibadan, Nigeria; LWK denotes Luhya in Webuye, Kenya; CEU denotes Utah residents with Northern and Western European ancestry. The [IGSR reuse statement](https://www.internationalgenome.org/IGSR_disclaimer/) permits use of the published Phase 3 data without embargo, with appropriate citation. Download URLs, byte counts and SHA-256 identities are recorded in [reference_downloads.json](extension/reference_downloads.json).
 
-| Component | Specification |
-|---|---|
-| Variant panel | Eight biallelic variants in two independent four-variant blocks |
-| Larger cohort | 2,000 EUR-labelled individuals |
-| Smaller cohort | 250, 500, 1,000 or 2,000 AFR-labelled individuals |
-| Allele frequency | 0.30 in both cohorts |
-| Haplotype persistence | 0.80 in EUR; 0.35 in AFR |
-| Replication | 20 replicates per scenario and sample size; 240 paired dataset settings |
-| Seed | 20261026, with scenario- and replicate-specific random streams |
-| Inputs | Identical marginal association statistics and in-sample LD for both approaches |
+Within each population, a deterministic random permutation assigned 40 donors to the external reference and all remaining donors to the study-generating pool. Both haplotypes of each donor stayed together during this split. No donor contributed to both pools. Raw genotypes and donor identifiers are stored locally under ignored `data/`; public outputs contain aggregate counts, allele frequencies, LD matrices and donor-list hashes.
 
-Two haplotypes were generated per individual. At the first variant of each block, alleles were Bernoulli(0.30) draws. Subsequent variants retained the preceding allele with the cohort-specific persistence probability or received a fresh Bernoulli draw. Genotype dosage summed the two haplotypes. This persistence parameter is distinct from the Bayesian effect correlation below.
+| Population | External donors | Study-generating donors |
+| --- | --- | --- |
+| CEU | 40 | 59 |
+| YRI | 40 | 68 |
+| LWK | 40 | 59 |
 
-For centred genotype matrix $X_k$, cohort $k$ phenotypes followed
 
-$$
-y_k=X_k\beta_k+\varepsilon_k,\qquad \varepsilon_k\sim N(0,I_{n_k}).
-$$
+Table 1. Reference donor allocation. These are real reference participants, not observed cases or controls in a disease study.
 
-All variants other than those listed below had zero generating effects.
+The two coordinate windows were chr22:20,000,000–20,100,000 and chr22:40,000,000–40,100,000, specified before phenotypes were generated. Eligible sites were PASS, complete phased biallelic single-nucleotide variants with nonambiguous allele pairs and minor-allele frequency at least 0.05 in every population and donor split. A deterministic coordinate-spaced traversal retained eight markers per window, excluding pairs with haplotype $r^2\geq0.95$ in any pool. Every resulting diploid LD matrix was checked for positive definiteness. The panel selection uses no phenotype or association evidence. [Variant coordinates](results/extension/variants.tsv), [MAF checks](results/extension/reference_qc.tsv) and [signed LD matrices](results/extension/ld_matrices.tsv) are provided.
 
-| Scenario | rsSIM002 EUR | rsSIM002 AFR | rsSIM006 EUR | rsSIM006 AFR |
-|---|---:|---:|---:|---:|
-| Shared effects | 0.18 | 0.18 | −0.16 | −0.16 |
-| Heterogeneous effects | 0.18 | 0.09 | 0.00 | 0.28 |
-| Null | 0.00 | 0.00 | 0.00 | 0.00 |
+### Study generation and experimental factors
 
-Within each scenario and replicate, the EUR cohort was reused across sample sizes and AFR samples were nested subsets of the same 2,000 individuals. Thus the 240 settings are not 240 independent experiments. Cohorts did not overlap. Relatives, missing genotypes, stratification, admixture and external LD-reference mismatch were not simulated. Equal allele frequencies help isolate sample-size and LD effects but do not reproduce real population diversity.
+For each synthetic individual, two local haplotypes were sampled independently with replacement from the appropriate study-generating pool. If $H_{iaj}$ is the ALT allele on sampled haplotype $a$ at variant $j$, the genotype dosage was
 
-### Summary-data likelihood
+$$G_{ij}=H_{i1j}+H_{i2j},\qquad X_{ij}=G_{ij}-\bar G_j.$$
 
-With centred phenotypes, define $Q_k=X_k^TX_k$, $q_k=X_k^Ty_k$ and $d_{jk}=(Q_k)_{jj}$. Marginal estimates and standard errors came from single-variant regression. Sufficient statistics were reconstructed from those summaries, LD matrix $R_k$ and exact in-sample genotype sums of squares:
+Whole-window resampling retains empirical local haplotype patterns. It introduces no new recombination or admixture and does not model kinship, longitudinal exposure or disease ascertainment. Reusing a finite donor pool limits biological diversity even when the synthetic cohort is much larger.
 
-$$
-(Q_k)_{ij}=(R_k)_{ij}\sqrt{d_{ik}d_{jk}},\qquad (q_k)_j=d_{jk}\widehat b_{jk}.
-$$
+Phenotypes were generated separately in CEU and one African reference population as
 
-The phenotype sum of squares was reconstructed as the median across variants of $(n_k-2)d_{jk}\operatorname{SE}(\widehat b_{jk})^2+d_{jk}\widehat b_{jk}^{\,2}$. Residual variance was then estimated from the full eight-variant regression:
+$$y_k=X_k\beta_k+\varepsilon_k,\qquad \varepsilon_k\sim N(0,I_{n_k}),\quad k\in\{C,A\}.$$
 
-$$
-\widehat\sigma_k^2=\frac{S_{yy,k}-q_k^TQ_k^{-1}q_k}{n_k-8-1}.
-$$
+All analyses included eight variants, including both causal variants when present. The one-based causal indices were 2 and 7. Under shared effects, both populations had effects $(0.22,0.22)$ at these positions. Under heterogeneous effects, CEU had $(0.22,0)$ and the African population had $(0.10,0.28)$. Under the null, every effect was zero. Effects are per ALT allele on the simulated phenotype scale.
 
-This variance was held fixed. The analysis is therefore conditional on plug-in residual variances and fixed priors; it does not integrate their uncertainty. This likelihood is appropriate to the specified quantitative linear model, not a drop-in likelihood for binary or survival GWAS.
+| Factor | Prespecified values |
+| --- | --- |
+| Loci | Two chromosome 22 windows; eight variants each |
+| African reference populations | YRI and LWK, analysed separately |
+| Cohort sizes | CEU 2,000; African population 250 or 1,000 |
+| External reference | Matched or YRI/LWK swapped; CEU always matched |
+| Replicates per cell | 300 calibration null; 200 held-out null; 100 per alternative |
+| Methods | Manc-COJO; MultiSuSiE; custom Bayes ρ = 0 and 0.8 |
 
-### Bayesian hierarchy and exact inference
 
-Each variant had a shared indicator $\gamma_j\sim\operatorname{Bernoulli}(0.2)$. Exclusion set both cohort effects to zero. Included effects followed
+Table 2. Experimental factors and replication. Calibration and evaluation use different random-seed namespaces; all methods are paired within each dataset. Matched and swapped-reference design cells use independent simulations and are not paired with one another.
 
-$$
-\beta_{jk}=\mu_j+\delta_{jk},\qquad
-\mu_j\sim N(0,\rho\tau^2),\qquad
-\delta_{jk}\sim N(0,(1-\rho)\tau^2),\qquad \tau=0.15.
-$$
+CEU external LD was always supplied by CEU reference donors. For the African cohort, the matched condition used its own population's reference donors; the swapped condition used LWK references for YRI-generated studies and YRI references for LWK-generated studies. The swapped condition changes both LD and allele frequencies. Even matched references are external and subject to sampling error because each contains only 40 donors.
 
-Strong borrowing used $\rho=0.8$; the sensitivity specification used $\rho=0$. The latter removes effect correlation but retains shared inclusion, so it is not a fully separate-cohort analysis. Inclusion identifies the union of signals and cannot assign separate probabilities of a zero effect within each cohort.
+### Marginal summary statistics and common likelihood inputs
 
-All $2^8=256$ configurations were enumerated. For active set $S$, effects ordered by cohort had covariance
+For centered genotype columns and phenotype, marginal effect estimates and their standard errors were
 
-$$
-V_S=\tau^2\begin{pmatrix}I&\rho I\\\rho I&I\end{pmatrix}.
-$$
+$$d_{kj}=X_{kj}^{T}X_{kj},\quad q_{kj}=X_{kj}^{T}y_k,\quad \hat b_{kj}=q_{kj}/d_{kj},$$
 
-Define $A_S=\operatorname{blockdiag}(Q_{1,SS}/\widehat\sigma_1^2,Q_{2,SS}/\widehat\sigma_2^2)$ and let $u_S$ stack $q_{k,S}/\widehat\sigma_k^2$ over cohorts. Conditional posterior covariance and mean were
+$$s_{kj}^{2}=\frac{y_k^{T}y_k-q_{kj}^{2}/d_{kj}}{(n_k-2)d_{kj}}.$$
 
-$$
-C_S=(V_S^{-1}+A_S)^{-1},\qquad m_S=C_Su_S.
-$$
+Only marginal effects, standard errors, sample sizes, phenotype variances, allele frequencies and external LD were passed to estimators. All dosages, summary alleles and reference BIM alleles were aligned to the same VCF ALT allele. For both Bayesian approaches, summary cross-products were reconstructed using
 
-Gaussian integration yielded configuration weights relative to the null:
+$$\hat d_{kj}=\frac{(n_k-1)v_{yk}}{(n_k-2)s_{kj}^{2}+\hat b_{kj}^{2}},\qquad \hat q_{kj}=\hat d_{kj}\hat b_{kj},$$
 
-$$
-w_S\propto 0.2^{|S|}0.8^{8-|S|}|V_S|^{-1/2}|V_S^{-1}+A_S|^{-1/2}
-\exp\left(\tfrac12u_S^TC_Su_S\right).
-$$
+$$\hat Q_k=D_k^{1/2}R_k^{\mathrm{ref}}D_k^{1/2},\qquad D_k=\operatorname{diag}(\hat d_{k1},\ldots,\hat d_{k8}).$$
 
-Normalised weights gave posterior inclusion probabilities (PIPs) and model-averaged effects. Posterior SDs include within- and between-configuration uncertainty; they are not credible-interval endpoints. No MCMC was required. Primary selection used PIP ≥ 0.95, with PIP ≥ 0.50 as sensitivity analysis. Effect estimates did not depend on the reporting threshold.
+The reconstruction of $d$ equals the generating cross-product to numerical precision when summaries are internally consistent. Replacing study LD with external LD makes the joint likelihood approximate. Residual variance was fixed at the sample phenotype variance $v_{yk}$ for both Bayesian approaches. This uses total phenotype variance as a null-model proxy for residual variance and avoids estimating residual variance from an inconsistent external LD matrix; it can overstate residual variance when genetic signal is present. It differs from the plug-in full-model residual variance used in the original pilot.
 
-### Manc-COJO comparator
+### Custom hierarchical variable selection
 
-The completed run used the official Windows Manc-COJO v1.1.0 executable, with URL and SHA256 in [tools/provenance.json](tools/provenance.json). PLINK BED references and `.ma` files were supplied in EUR, AFR order. BIM A1 and summary effect alleles were A. Commands used `--cojo-slct --cojo-p 5e-8 --thread-num 1`, retaining other defaults.
+The custom model assigns shared variant inclusion across populations,
 
-Manc-COJO's stepwise meta-analysis criterion and the Bayesian shared-inclusion criterion differ. P-value and PIP thresholds were not calibrated to equal frequentist error rates. Recall differences at these settings cannot establish superior power at a common false-positive rate.
+$$\gamma_j\sim\operatorname{Bernoulli}(0.2),\qquad \beta_{Cj}=\beta_{Aj}=0\ \text{if }\gamma_j=0.$$
 
-### Outcomes and Monte Carlo uncertainty
+For an included variant,
 
-Exact recall was the fraction of planted causal variants selected. False discovery proportion was $\mathrm{FP}/\max(1,\mathrm{TP}+\mathrm{FP})$, with zero assigned when nothing was selected. We also recorded any false selection, AFR-specific variant recovery and causal-block recall. The latter counted any selected variant in a causal four-variant block; it is a permissive proxy measure, not formal LD-based signal matching or credible-set coverage.
+$$\begin{pmatrix}\beta_{Cj}\\\beta_{Aj}\end{pmatrix}\mid\gamma_j=1\sim N\left(0,\tau^2\begin{pmatrix}1&\rho\\\rho&1\end{pmatrix}\right),\qquad \tau=0.15,\quad\rho\in\{0,0.8\}.$$
 
-For replicate $r$, AFR effect error was averaged over all eight variants. Displayed RMSE is the square root of mean replicate MSE:
+The prior with $\rho=0$ has independent effect magnitudes conditional on inclusion, but still shares inclusion indicators. It therefore remains a joint model rather than two independent population analyses. All $2^8=256$ inclusion configurations were enumerated. For configuration $\gamma$, with prior covariance $V_\gamma$ and likelihood precision $A_\gamma=\operatorname{blockdiag}(\hat Q_{C,\gamma}/v_{yC},\hat Q_{A,\gamma}/v_{yA})$, let
 
-$$
-\mathrm{MSE}_r=\frac18\sum_{j=1}^{8}(\widehat\beta_{jr}-\beta_j)^2,
-\qquad \mathrm{RMSE}=\sqrt{\frac1{20}\sum_{r=1}^{20}\mathrm{MSE}_r}.
-$$
+$$u_\gamma=(\hat q_{C,\gamma}^{T}/v_{yC},\hat q_{A,\gamma}^{T}/v_{yA})^T,\quad H_\gamma=V_\gamma^{-1}+A_\gamma.$$
 
-Unselected Manc-COJO effects were assigned zero to define a whole-locus estimator. Bayesian MSE used all posterior means. EUR and causal-only AFR errors are also exported. Across replicates, $\mathrm{MCSE}(\bar a)=s_a/\sqrt{20}$; paired differences used identical datasets. Figures show approximately ±1.96 MCSE, with recall bounds clipped to [0,1] and RMSE intervals obtained by the delta method. These describe simulation precision, not uncertainty in real-world effects.
+The integrated log Bayes factor and posterior moments follow from Gaussian integration,
+
+$$\log BF_\gamma=-\tfrac12\log|V_\gamma|-\tfrac12\log|H_\gamma|+\tfrac12u_\gamma^TH_\gamma^{-1}u_\gamma,$$
+
+$$w_\gamma=\frac{p(\gamma)BF_\gamma}{\sum_{\gamma'}p(\gamma')BF_{\gamma'}},\qquad PIP_j=\sum_\gamma w_\gamma\gamma_j.$$
+
+$$E(\beta\mid S)=\sum_\gamma w_\gamma E_\gamma H_\gamma^{-1}u_\gamma.$$
+
+The embedding matrix $E_\gamma$ inserts zero effects for excluded variants in each configuration. Exact enumeration removes Monte Carlo integration error within this small model, but does not validate the external-LD approximation or the prior scientifically.
+
+### Established Bayesian comparator and conditional association
+
+MultiSuSiE was obtained from the [authors' implementation](https://github.com/jordanero/MultiSuSiE) at the pinned commit in [software provenance](results/extension/software_provenance.json). It represents each population's effect vector as a sum of single effects,
+
+$$\beta_k=\sum_{\ell=1}^{L}b_{k\ell},\qquad b_{k\ell}=a_{k\ell}e_{z_\ell},$$
+
+Here $z_\ell$ has a uniform categorical prior over the eight variants and is shared across populations. The effect amplitudes have covariance
+
+$$\operatorname{Cov}\begin{pmatrix}a_{C\ell}\\a_{A\ell}\end{pmatrix}=\begin{pmatrix}v_{C\ell}&0.75\sqrt{v_{C\ell}v_{A\ell}}\\0.75\sqrt{v_{C\ell}v_{A\ell}}&v_{A\ell}\end{pmatrix}.$$
+
+Iterative Bayesian stepwise selection cycles through components, updating a single-effect posterior using the residual summary cross-product
+
+$$r_{k\ell}=\hat q_k-\hat Q_k\sum_{m\ne\ell}E(b_{km}\mid S).$$
+
+We supplied $L=2$, between-population correlation 0.75, population-specific effect scales learned by the package's `early_EM` strategy, float64 arithmetic, 200 iterations and convergence tolerance $10^{-3}$. The package's convergence flag uses the change in its evidence lower bound after the minimum iteration requirement. Fixing $L$ at the true number of simulated causal variants gives the comparator useful architectural information and limits the scope of inference. Residual variance estimation was disabled with external references. Low-MAC censoring was disabled because the common QC panel was fixed for all methods. We compare PIPs and posterior mean effects; this benchmark does not assess credible-set coverage.
+
+Manc-COJO used the released v1.1.0 executable with one thread and its default conditional-selection and joint-effect algorithms. Its executable SHA-256 identity is verified before use. It received two external PLINK reference files and two marginal summary files. The frequency-difference filter was set to 1 in both cohorts to retain the same prespecified variants during the controlled reference-swap experiment; this is not a recommended default for observational GWAS. Collinearity checks remained active. Every fitted effect was verified against the common ALT allele.
+
+### Null calibration and independent evaluation
+
+Each method was calibrated separately within each of the 16 design cells using 300 null datasets. For Bayesian models, the dataset score was its maximum PIP. For Manc-COJO, the score was the negative logarithm of the minimum first-step inverse-variance meta-analysis p value:
+
+$$z_j=\frac{\sum_k\hat b_{kj}/s_{kj}^{2}}{\sqrt{\sum_k1/s_{kj}^{2}}},\qquad T_{\mathrm{COJO}}=-\log_{10}\left[\min_j2\Phi(-|z_j|)\right].$$
+
+For $B=300$ calibration scores ordered increasingly, the cutoff was the $h$th order statistic,
+
+$$h=\left\lceil(B+1)(1-\alpha)\right\rceil=286,\qquad \alpha=0.05.$$
+
+Bayesian variants were selected when their PIP strictly exceeded this cutoff; Bayesian score ties were treated conservatively as nonselections. Manc-COJO was rerun at the frozen entry p threshold $10^{-T_{(h)}}$; results were not obtained by filtering a permissive stepwise path. Its executable uses an inclusive p-value boundary; exact calibration–evaluation ties have probability zero under the continuous generating model, while finite-precision behaviour is checked numerically. Because any false selection under the global null requires first entry, calibration of this entry event bounds the locus event subject to numerical and QC behaviour. Tests bracketed the executable's first-entry boundary around the computed minimum p value. Bayesian ties and subsequent algorithmic rejection can make the actual event rate conservative.
+
+The finite-rank rule targets the probability of at least one selected variant under the global null for a new exchangeable dataset conditional on the same donor pools and design cell. It is neither a genome-wide significance threshold nor control of false discovery rate among selected variants. Calibration thresholds were saved before any held-out evaluation in that cell. Every held-out null dataset had an independent seed namespace. MultiSuSiE outputs after the fixed iteration budget were retained even if convergence failed, with convergence status reported explicitly.
+
+### Performance measures and uncertainty
+
+With true causal set $C$ and selected set $S$, exact recovery and African-population effect error were
+
+$$\operatorname{Recall}=\frac{|S\cap C|}{|C|},\qquad \operatorname{RMSE}_{A}=\sqrt{\frac{1}{8R}\sum_{r=1}^{R}\sum_{j=1}^{8}(\hat\beta_{Arj}-\beta_{Aj})^2}.$$
+
+$$\operatorname{FDP}=\frac{|S\setminus C|}{\max(1,|S|)}.$$
+
+Mean false discovery proportion (FDP) across alternative replicates is reported alongside recovery. Global-null calibration does not guarantee control of this quantity when true signals are present.
+
+Unselected Manc-COJO effects were set to zero; Bayesian posterior means were evaluated for all variants. This includes selection and shrinkage in the error measure. A selected LD proxy does not count as exact causal recovery, so imperfect localisation can lower recall even when a regional signal is detected. Null false-selection rate was the proportion of datasets with at least one selection. Tables include descriptive 95% Wilson intervals. Pooled summaries balance four fixed locus–population cells within each sample-size and reference group; per-cell results are available separately.
+
+For the population-specific causal variant, we additionally report mean African effect, bias relative to 0.28 and effect RMSE. Monte Carlo intervals for the mean use the stratified standard error
+
+$$SE(\bar\beta)=\sqrt{\frac{1}{C^2}\sum_{c=1}^{C}\frac{s_c^2}{R_c}},\qquad C=4,\quad R_c=100,$$
+
+where $s_c^2$ is the sample variance of estimates within a fixed locus–population cell. The plotted 95% intervals are $\bar\beta\pm1.96SE(\bar\beta)$ and describe precision of the simulated mean, not prediction intervals for individual estimates or biological population uncertainty.
+
+Paired differences compare methods on the same datasets. Percentile intervals use 2,000 bootstrap resamples of paired replicates within each fixed locus–population cell. These intervals condition on the frozen calibration cutoffs and do not propagate threshold-estimation uncertainty. They describe simulation uncertainty conditional on the reference donors and two loci, not uncertainty over African populations or genome-wide regions. We did not select methods using held-out performance or perform significance claims from multiple pairwise tests.
 
 ## Results
 
-### Signal recovery increased with sample size
+### Public LD panels and execution checks
 
-With shared effects and AFR sample size 250, exact recall was 0.450 for Manc-COJO, 0.600 for the uncorrelated-effect prior and 0.675 for strong borrowing. At sample size 2,000, recall reached 0.975, 1.000 and 1.000. Under heterogeneous effects, the corresponding largest-sample values were 0.425, 0.875 and 0.900. These contrasts combine different models, selection objectives and thresholds. Exact recovery also penalises selection of correlated proxies.
+All three populations contributed disjoint reference and study-generating pools. Sixteen variants across the two windows passed the common allele, phase, MAF and haplotype-collinearity requirements. In the first window, maximum pairwise diploid reference $r^2$ was CEU 0.951; YRI 0.328; LWK 0.539. Diploid correlations can exceed the haplotype QC threshold because the finite donor pairs yield different estimates. The panels retain observed differences in local correlation, but their sparse marker sets do not capture all variation within either window. The signed LD matrices below make the actual reference structure visible before interpreting differences in estimator performance.
 
-![Exact causal-variant recovery by sample size and effect scenario](results/figures/01_signal_recovery.png)
+![External reference LD in two chromosome 22 windows](figures/extension/reference_ld.png)
 
-*Figure 1. Mean exact recall across 20 replicates per point, with Monte Carlo error bars. Bayesian selection uses PIP ≥ 0.95; Manc-COJO uses its 5 × 10⁻⁸ selection threshold.*
+Figure 1. Signed diploid LD correlations in the external CEU, YRI and LWK panels. Each matrix uses 40 reference donors. Variant indices correspond to the coordinate-sorted panel within each locus. Differences include reference sampling variation.
 
-The endpoint settings illustrate the sample-size gradient and the distinction between recovery and estimation. AFR RMSE below includes all eight effects, including null variants.
+The execution audit contains 4,800 calibration datasets, 3,200 held-out null datasets and 3,200 alternative datasets, yielding 25,600 evaluation method fits and 204,800 variant-level evaluation records. Numerical tests checked summary reconstruction, finite Bayesian outputs, the finite-rank rule, conservative handling of ties and the executable's first-entry boundary. Independent file checks recovered ALT dosages and LD from the generated PLINK references. Eleven selected upstream MultiSuSiE numerical tests passed, including individual-data versus summary-data agreement; the entire upstream test suite was not run. All 6,400 MultiSuSiE evaluation fits met the package convergence criterion.
 
-| Scenario | AFR N | Method | Exact recall | AFR RMSE | Mean FDP |
-|---|---:|---|---:|---:|---:|
-| Shared | 250 | Manc-COJO | 0.450 | 0.077 | 0.000 |
-| Shared | 250 | Bayesian ρ = 0 | 0.600 | 0.050 | 0.000 |
-| Shared | 250 | Bayesian ρ = 0.8 | 0.675 | 0.039 | 0.000 |
-| Shared | 2,000 | Manc-COJO | 0.975 | 0.021 | 0.000 |
-| Shared | 2,000 | Bayesian ρ = 0 | 1.000 | 0.017 | 0.000 |
-| Shared | 2,000 | Bayesian ρ = 0.8 | 1.000 | 0.016 | 0.000 |
-| Heterogeneous | 250 | Manc-COJO | 0.200 | 0.105 | 0.000 |
-| Heterogeneous | 250 | Bayesian ρ = 0 | 0.275 | 0.078 | 0.025 |
-| Heterogeneous | 250 | Bayesian ρ = 0.8 | 0.300 | 0.086 | 0.050 |
-| Heterogeneous | 2,000 | Manc-COJO | 0.425 | 0.072 | 0.000 |
-| Heterogeneous | 2,000 | Bayesian ρ = 0 | 0.875 | 0.018 | 0.000 |
-| Heterogeneous | 2,000 | Bayesian ρ = 0.8 | 0.900 | 0.020 | 0.000 |
+### False selection after calibration
 
-*Table 1. Selected primary-threshold results. All sample sizes, thresholds, metrics and MCSEs are in [summary.tsv](results/summary.tsv).*
+Held-out null false-selection estimates ranged from 3.5%–6.6% across the method, sample-size and reference groups. Each table row pools 800 held-out datasets from four fixed locus–population cells. Differences from 0.05 reflect finite calibration and evaluation samples, score ties and method-specific selection checks. These results assess the particular calibrated simulation mechanism rather than validating published PIP or genome-wide thresholds for real studies.
 
-### The benefit of borrowing depended on effect similarity
+![Held out null false selection after calibration](figures/extension/null_calibration.png)
 
-At AFR sample size 250, strong borrowing lowered RMSE from 0.050 to 0.039 under shared effects but raised it from 0.078 to 0.086 under heterogeneous effects. The same direction persisted at sample size 2,000, although errors were smaller. Borrowing improved estimation when similarity was correctly assumed; the uncorrelated-effect prior better preserved heterogeneous effects in this experiment.
+Figure 2. Held-out null probability of any selection with descriptive 95% Wilson intervals. The dashed line is the 0.05 calibration target; each method and design cell had its own separately estimated cutoff. The plotted groups pool two loci and two African reference populations.
 
-![AFR effect-estimation error under shared and heterogeneous effects](results/figures/02_effect_error.png)
+| African n | Reference | Method | Null rate | 95% interval |
+| --- | --- | --- | --- | --- |
+| 250 | Matched | Bayes ρ = 0 | 0.043 | 0.031–0.059 |
+| 250 | Matched | Bayes ρ = 0.8 | 0.040 | 0.028–0.056 |
+| 250 | Matched | MultiSuSiE | 0.055 | 0.041–0.073 |
+| 250 | Matched | Manc-COJO | 0.062 | 0.048–0.081 |
+| 250 | Swapped | Bayes ρ = 0 | 0.059 | 0.044–0.077 |
+| 250 | Swapped | Bayes ρ = 0.8 | 0.061 | 0.047–0.080 |
+| 250 | Swapped | MultiSuSiE | 0.051 | 0.038–0.069 |
+| 250 | Swapped | Manc-COJO | 0.049 | 0.036–0.066 |
+| 1000 | Matched | Bayes ρ = 0 | 0.055 | 0.041–0.073 |
+| 1000 | Matched | Bayes ρ = 0.8 | 0.056 | 0.042–0.074 |
+| 1000 | Matched | MultiSuSiE | 0.049 | 0.036–0.066 |
+| 1000 | Matched | Manc-COJO | 0.061 | 0.047–0.080 |
+| 1000 | Swapped | Bayes ρ = 0 | 0.035 | 0.024–0.050 |
+| 1000 | Swapped | Bayes ρ = 0.8 | 0.055 | 0.041–0.073 |
+| 1000 | Swapped | MultiSuSiE | 0.049 | 0.036–0.066 |
+| 1000 | Swapped | Manc-COJO | 0.066 | 0.051–0.086 |
 
-*Figure 2. AFR whole-locus RMSE with delta-method Monte Carlo error bars. Posterior-mean RMSE is identical at both Bayesian PIP reporting thresholds.*
 
-### Recovery and shrinkage of the AFR-specific variant were distinct outcomes
+Table 3. Held-out null false-selection rates and descriptive 95% intervals. Full per-cell event rates and frozen thresholds are provided in the linked results files.
 
-In the heterogeneous scenario, rsSIM006 had effect zero in EUR and 0.28 in AFR. At AFR sample size 250, it was recovered in 10% of replicates under the uncorrelated-effect prior and in none with strong borrowing or Manc-COJO. At sample size 2,000, recovery was 100% under both Bayesian priors and 55% under Manc-COJO. Increasing sample size improved selection, but selection alone did not establish accurate estimation.
+### Recovery of shared and heterogeneous effects
 
-![Recovery frequency of the AFR-specific variant](results/figures/03_afr_specific_recovery.png)
+At African cohort size 250 with matched references, shared-effect exact recall was Bayes ρ = 0: 0.979; Bayes ρ = 0.8: 0.984; MultiSuSiE: 0.976; Manc-COJO: 0.985. Under heterogeneous effects it was Bayes ρ = 0: 0.610; Bayes ρ = 0.8: 0.634; MultiSuSiE: 0.574; Manc-COJO: 0.594. For the variant with zero CEU effect and African effect 0.28, recovery was Bayes ρ = 0: 0.235; Bayes ρ = 0.8: 0.278; MultiSuSiE: 0.150; Manc-COJO: 0.193. These comparisons concern the exact simulated causal marker and are sensitive to shared-inclusion assumptions, borrowing strength, LD and the calibrated operating point.
 
-*Figure 3. Selection frequency for rsSIM006 under heterogeneous effects; 20 replicates per sample size.*
+Similar shared-effect recall concealed substantial differences in incorrect assignment: mean FDP at African cohort size 250 with matched references was Bayes ρ = 0: 0.302; Bayes ρ = 0.8: 0.289; MultiSuSiE: 0.014; Manc-COJO: 0.264. The low MultiSuSiE value in this setting shows that high recovery alone would give an incomplete comparison. Matching the global-null operating point did not remove method-specific false discoveries under an alternative with true signals.
 
-Strong borrowing attenuated the AFR-specific effect more at every sample size. At N = 250, the mean posterior effect was 0.061 with ρ = 0.8 versus 0.103 with ρ = 0, both below the true effect of 0.28. At N = 2,000, means increased to 0.247 and 0.265. These averages include all replicates regardless of selection and demonstrate why recall should be interpreted alongside effect estimates.
+![Causal variant recovery and false discovery proportion with matched external references](figures/extension/decision_tradeoff.png)
 
-![Posterior shrinkage of the AFR-specific effect](results/figures/04_afr_effect_shrinkage.png)
+Figure 3. Exact causal-variant recall and mean false discovery proportion with matched external references, across 400 alternative datasets per method, effect scenario and cohort size. Both simulated causal variants are typed. The [recovery figure including both reference conditions](figures/extension/signal_recovery.png) is also available; matched and swapped design cells use independent simulations.
 
-*Figure 4. Mean model-averaged AFR effect for rsSIM006. The dashed line marks truth; error bars describe Monte Carlo uncertainty. Values are available in [afr_specific_posterior_means.tsv](results/afr_specific_posterior_means.tsv).*
+| Effects | African n | Method | Exact recall | African RMSE | Mean FDP |
+| --- | --- | --- | --- | --- | --- |
+| Shared | 250 | Bayes ρ = 0 | 0.979 | 0.081 | 0.302 |
+| Shared | 250 | Bayes ρ = 0.8 | 0.984 | 0.064 | 0.289 |
+| Shared | 250 | MultiSuSiE | 0.976 | 0.071 | 0.014 |
+| Shared | 250 | Manc-COJO | 0.985 | 0.107 | 0.264 |
+| Shared | 1000 | Bayes ρ = 0 | 0.990 | 0.073 | 0.341 |
+| Shared | 1000 | Bayes ρ = 0.8 | 0.999 | 0.061 | 0.309 |
+| Shared | 1000 | MultiSuSiE | 0.988 | 0.041 | 0.009 |
+| Shared | 1000 | Manc-COJO | 0.995 | 0.068 | 0.218 |
+| Heterogeneous | 250 | Bayes ρ = 0 | 0.610 | 0.095 | 0.168 |
+| Heterogeneous | 250 | Bayes ρ = 0.8 | 0.634 | 0.087 | 0.157 |
+| Heterogeneous | 250 | MultiSuSiE | 0.574 | 0.103 | 0.096 |
+| Heterogeneous | 250 | Manc-COJO | 0.594 | 0.115 | 0.139 |
+| Heterogeneous | 1000 | Bayes ρ = 0 | 0.879 | 0.066 | 0.204 |
+| Heterogeneous | 1000 | Bayes ρ = 0.8 | 0.906 | 0.063 | 0.204 |
+| Heterogeneous | 1000 | MultiSuSiE | 0.833 | 0.066 | 0.059 |
+| Heterogeneous | 1000 | Manc-COJO | 0.752 | 0.090 | 0.192 |
 
-### Null results depended on the reporting threshold
 
-At PIP ≥ 0.95, neither Bayesian specification selected variants in any null replicate; Manc-COJO also made no null selections. At PIP ≥ 0.50, false selections occurred in up to 3 of 20 replicates. Zero events among 20 independent replicates gives a one-sided 95% binomial upper bound of $1-0.05^{1/20}=0.139$. This cannot establish genome-wide calibration. Counts across sample sizes cannot be pooled as independent observations because cohorts are nested.
+Table 4. Recovery, African effect RMSE and mean false discovery proportion using matched external references. Each row contains 400 paired-method datasets across the four fixed locus–population cells. False discoveries refer to noncausal markers under the exact simulated truth, including selected LD proxies. Results for swapped references appear in [summary.tsv](results/extension/summary.tsv).
 
-| Replicates with any null false selection | AFR N = 250 | 500 | 1,000 | 2,000 |
-|---|---:|---:|---:|---:|
-| Manc-COJO | 0/20 | 0/20 | 0/20 | 0/20 |
-| Bayesian ρ = 0, PIP ≥ 0.95 | 0/20 | 0/20 | 0/20 | 0/20 |
-| Bayesian ρ = 0.8, PIP ≥ 0.95 | 0/20 | 0/20 | 0/20 | 0/20 |
-| Bayesian ρ = 0, PIP ≥ 0.50 | 0/20 | 2/20 | 3/20 | 2/20 |
-| Bayesian ρ = 0.8, PIP ≥ 0.50 | 0/20 | 1/20 | 2/20 | 2/20 |
+| Effects | Method | Recall difference | 95% interval |
+| --- | --- | --- | --- |
+| Shared | Bayes ρ = 0 | -0.006 | -0.015 to +0.001 |
+| Shared | Bayes ρ = 0.8 | -0.001 | -0.009 to +0.006 |
+| Shared | MultiSuSiE | -0.009 | -0.018 to +0.000 |
+| Heterogeneous | Bayes ρ = 0 | +0.016 | -0.001 to +0.034 |
+| Heterogeneous | Bayes ρ = 0.8 | +0.040 | +0.024 to +0.056 |
+| Heterogeneous | MultiSuSiE | -0.020 | -0.041 to +0.000 |
 
-*Table 2. False-selection counts from [null_event_counts.tsv](results/null_event_counts.tsv).*
 
-The paired design also quantifies uncertainty in method differences. For shared effects at N = 250, strong borrowing minus Manc-COJO gave an exact-recall difference of 0.225 with MCSE 0.092. This describes variability in the observed contrast without resolving the unmatched-threshold limitation. Full paired estimates are in [paired_differences.tsv](results/paired_differences.tsv).
+Table 5. Paired recall differences relative to Manc-COJO at African cohort size 250 with matched references. Positive values indicate greater exact recall. Intervals use paired resampling within fixed cells and do not imply general method superiority.
+
+### Effect estimation and borrowing
+
+For shared effects at African cohort size 250 with matched references, African effect RMSE was 0.081 for the uncorrelated-effect prior and 0.064 for the strongly correlated prior. Under heterogeneous effects the corresponding values were 0.095 and 0.087. The direction and magnitude of this difference describe the consequences of the chosen priors in this design. RMSE also depends on the number of null variants, selection rules and the phenotype-scale variance approximation; it cannot be interpreted as pure causal-effect bias.
+
+For the population-specific variant with true African effect 0.28, mean estimates at African cohort size 250 with matched references were Bayes ρ = 0: 0.063; Bayes ρ = 0.8: 0.073; MultiSuSiE: 0.083; Manc-COJO: 0.056. These estimates directly expose attenuation or inflation that an average error across all eight markers can conceal. [Population-specific effect estimates and bias](results/extension/population_specific_effects.tsv) are available for both reference conditions.
+
+![African population effect estimation error](figures/extension/effect_error.png)
+
+Figure 4. Top panels show African-population effect RMSE across all eight markers with matched external references. Bottom panels show the mean estimate for the population-specific causal variant, with stratified 95% Monte Carlo intervals and the true effect 0.28 indicated by the dashed line. Bayesian estimates are posterior means; unselected Manc-COJO effects are zero. The methods use different priors and selection objectives even after locus-level null calibration.
 
 ## Discussion
 
-The central result is a conditional trade-off: an effect-correlation prior can stabilise estimates when effects are shared, yet pull a smaller-cohort-specific effect toward the larger cohort when effects differ. Increasing the smaller cohort's sample size improved recovery and estimation but did not remove every consequence of the prior. Because ρ = 0 retains shared inclusion, this comparison isolates effect-correlation assumptions within the hierarchy rather than contrasting pooling with completely independent analyses.
+Independent null calibration permits a comparison of recovery at approximately comparable locus-level operating points under the specified generating mechanism. At African cohort size 250 with matched references, changing the custom prior from uncorrelated effects to correlation 0.8 changed African effect RMSE by -21.4% under shared effects and -8.5% under heterogeneous effects. These conditional findings quantify the borrowing assumption in the presence of external LD; they should be read together with the paired recovery intervals and method-specific objectives.
 
-Comparisons with Manc-COJO require attention to the estimand. Exact causal-variant recall is narrower than recovery of an associated region, and zero-filled selected effects differ from continuous model averaging. Thresholds were not matched for error rates. The observed differences therefore cannot establish that one method is generally more powerful or better calibrated.
+The principal caution is the separation between global-null calibration and false discoveries when true signals are present. MultiSuSiE retained similar shared-effect recovery while making substantially fewer exact-marker false discoveries in the smaller-cohort matched-reference example. The custom models' high recovery therefore does not establish an advantage over the published comparator. Lower all-marker RMSE under the correlated prior also coexisted with attenuation of the population-specific effect, demonstrating that an average error measure can conceal relevant bias.
 
-The simulation uses favourable inputs: a tiny locus, known allele alignment, equal allele frequencies, in-sample LD and a Gaussian outcome. Real studies may involve reference mismatch, stratification, relatedness, admixture, overlap and more complex genetic architectures. Fixed priors and plug-in variances omit further uncertainty. Twenty replicates yield coarse estimates, and runtimes at eight variants reflect implementation and input/output overhead rather than scalability.
+External references introduce uncertainty even when their population labels match the generating pool. Forty donors may estimate LD imprecisely, and a population swap changes both correlation and allele frequencies. A swapped panel can occasionally fit a particular simulated dataset better by chance. These experiments should therefore be interpreted through the actual matrices and per-cell results rather than a blanket assumption that every swap must reduce performance.
 
-A broader evaluation would require more independent replicates, calibrated decision thresholds, realistic LD and frequency variation, external-reference mismatch, ancestry-specific inclusion and formal signal matching. These extensions were not tested here.
+MultiSuSiE supplies an established fine-mapping comparator, while Manc-COJO supplies conditional association and the custom model isolates an explicit effect-correlation assumption. Common inclusion does not force equal effects, but it can couple evidence from an underpowered population to the larger cohort. Differences in prior scale learning, selection paths and signal-number assumptions remain after threshold calibration. The comparison does not establish that conditional association and Bayesian fine-mapping solve identical inferential problems.
 
-### Priorities for a stronger benchmark
+The main limitations are the two sparse eight-variant windows, a single fixed split of relatively small reference populations, typed causal variants, normally distributed independent residuals, no sample overlap and one specified effect architecture per alternative. The benchmark omits genome-wide multiple testing, rare variants, admixture, relatedness, binary-trait ascertainment, missing causal variants, imputation uncertainty and reference–study harmonisation errors. The chosen $L=2$ is favourable information for MultiSuSiE. Repeated synthetic cohorts increase Monte Carlo precision but cannot increase the underlying reference diversity. Calibration is conditional on this simulation distribution and must not be reused as an empirical threshold for observational GWAS.
 
-The following changes would address the main threats to interpretation. They are prospective study recommendations, not completed analyses.
-
-| Priority | Proposed improvement | Evaluation |
-|---|---|---|
-| Comparable decisions | Choose operating thresholds on independent null calibration simulations, then freeze them for held-out evaluation | Recovery at a common locus-level false-selection rate; report uncertainty in that rate |
-| Simulation precision | Increase independent replicates using a prespecified MCSE target | For a binary outcome near 0.5, 1,000 replicates give MCSE about 0.016; rare-event calibration needs substantially more |
-| Reference robustness | Use separate LD panels with varied size and controlled mismatch | Changes in selection, bias and RMSE relative to the in-sample reference |
-| Flexible heterogeneity | Evaluate cohort-specific inclusion states, opposite effects and prior-scale sensitivity | Cohort-specific recovery, effect bias and interval coverage under prespecified alternatives |
-| Appropriate recovery targets | Assess both exact variants and LD-equivalent signals; include an established Bayesian comparator | Signal matching with a predefined LD rule, alongside exact recall and false selections |
-
-Calibration should target a feasible locus-level operating point for this design, rather than imply that a modest simulation can resolve a 5 × 10⁻⁸ error rate. Training or tuning simulations must remain separate from the datasets used to report final performance.
+Further evidence would require many more independent LD regions, larger and independently resampled reference panels, additional African populations, varied numbers and sizes of causal effects, untyped causal variants and established alternatives evaluated under their intended use cases. Real-data validation would require an appropriately consented cohort and a separate analysis plan. Access to AWI-Gen is not necessary for the present public-reference simulation, but these results cannot substitute for validation in AWI-Gen or another target cohort.
 
 ## Conclusion
 
-The usefulness of cross-population effect borrowing depended on effect similarity and information in the smaller cohort. Recovery, estimation error and ancestry-specific shrinkage offered complementary evidence. This reproducible synthetic study supports examination of modelling assumptions and computational behaviour, not biological conclusions about real populations or a general ranking of methods.
+Independent null calibration, observed local haplotypes and disjoint external donors provide a controlled basis for comparing conditional association and Bayesian variable selection. The results show that similar causal recovery and calibrated global-null rates can coexist with markedly different false discovery proportions when true signals are present. MultiSuSiE performed favourably on this trade-off in the shared-effect example. Interpretation remains conditional on synthetic phenotypes, fixed reference donors and a small typed-variant design; broader biological or genome-wide conclusions require additional evidence.
 
 ## Reproducibility
 
-The repository includes source code, 1,200 replicate-level method/threshold records, 3,840 Bayesian variant records, summaries, figures and the [Word manuscript](report/Multiancestry_GWAS_Methodology_and_Results.docx). Five reporting combinations were evaluated per dataset: Manc-COJO and two Bayesian correlations at two thresholds. Bayesian thresholds share the same fitted posterior. Generated inputs, detailed logs, third-party executables and machine-specific paths are excluded from Git.
+The tested environment was Windows with Python 3.12.14. Exact packages, source revisions and executable identities are recorded in [software_provenance.json](results/extension/software_provenance.json). The tested design is [design.json](extension/design.json), and each cell contains calibration scores, frozen thresholds, evaluation results and a completion record. The [validation audit](results/extension/validation.json) records expected output counts. Raw public genotypes, dependency installations and temporary PLINK inputs are excluded from GitHub.
 
-The recorded analysis used Python 3.12.14, NumPy 2.3.5, Manc-COJO v1.1.0 and R 4.3.3 for base summaries. The original figures were authored with R 4.5.1. The current Word report is rendered from this README using Pandoc and python-docx, preserving native editable equations and the order of interpretations and figures. See [analysis provenance](results/runtime_and_validation.json), [report provenance](results/word_report_software.json), [requirements.txt](requirements.txt), [Manc-COJO provenance](tools/provenance.json) and [public checksums](checksums_public.sha256).
+Run from the repository root in a fresh Python environment. The main benchmark used four worker processes; lower this number if memory or CPU resources are limited. The initial reference download is about 196 MiB compressed and uses verified HTTP resume ranges.
 
-Use an existing Python environment with the dependencies in `requirements.txt`, Pandoc (also distributed with Quarto), and R. Regenerating the publication figures additionally requires `ggplot2` and `jsonlite`. Obtain Manc-COJO from the [official release](https://github.com/light156/multi-ancestry-COJO/releases/tag/v1.1.0). Scripts do not install dependencies. From the repository root:
-
-```bash
-python scripts/validate.py
-
-# Linux executable with Linux Python
-python scripts/simulate_compare.py --replicates 20 --seed 20261026 --manc tools/manc_cojo
-
-# On Windows, use this simulation command instead
-# python scripts/simulate_compare.py --replicates 20 --seed 20261026 --manc tools/manc_cojo_win.exe
-
-Rscript scripts/report.R
-Rscript scripts/build_figures.R
-python scripts/build_word_report.py
-python scripts/audit_results.py
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r extension/requirements.txt
+python -m pip install -r requirements.txt
+powershell -ExecutionPolicy Bypass -File extension/install_manc.ps1
+python extension/fetch_reference.py
+python extension/prepare_reference.py
+python extension/test_reference.py
+python extension/test_methods.py
+python extension/benchmark.py --smoke --cell 0
+python extension/benchmark.py --workers 4
+python extension/audit_benchmark.py
+python extension/analyze.py
+python extension/provenance.py
+python extension/build_manuscript.py
+python scripts/build_word_report.py --pandoc "C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/pandoc.exe"
+python scripts/validate_report.py
 ```
 
-For a report-only update, run `python scripts/build_word_report.py --pandoc /path/to/pandoc` against the saved results and figures. The R entry point `Rscript scripts/build_word_report.R` remains available; set `PYTHON` and `PANDOC` if those executables are not on PATH. Editing the README and rebuilding the Word report keeps their scientific narrative synchronised without rerunning the analysis.
+Pandoc is also distributed with Quarto; set its path for the local installation. The Word builder uses this README as the manuscript source, converts TeX equations to editable Office Math and records the source hash. The [workflow text](workflow.txt) contains the same methodological and reproduction specification. For Linux/HPC, install the same Python dependencies in an isolated environment and provide the official Linux Manc-COJO executable through `MANC_COJO`; this extension was tested on Windows, so Linux execution is a supported code path rather than a completed platform validation. The workflow is a small simulation benchmark and does not require participant-level clinical data.
 
-Simulation commands replace generated inputs and results in this checkout. Omitting `--manc` produces status `BAYES_ONLY_MANC_NOT_RUN`, not a completed comparison. To add Manc-COJO to existing generated datasets, run `python scripts/run_manc_existing.py --manc tools/manc_cojo_win.exe` on Windows, or supply the Linux executable on Linux, then regenerate summaries and the Word report.
+Results are checkpointed by design cell. The repository includes completed published checkpoints, so the benchmark command reuses them by default when design and benchmark-code hashes match. For a complete new execution, first move `results/extension/cells` to an archive outside the project; the runner will recreate that folder. To run a changed design, use a separate checkout or archive the previous results before starting; do not combine partial outputs from different versions. Random streams are identified by master seed, cell, phase and replicate. Execution time is hardware dependent, and first-use numerical compilation adds startup cost.
 
-`validate.py` checks BED dosage encoding, summary-likelihood reconstruction, an analytic posterior calculation and cohort-swap symmetry. The recorded full audit checks result completeness, finite errors, PIP bounds, allele orientation, selected joint P-values and actual executable logs. `audit_results.py` requires regenerated local `results/config.json` and per-dataset logs; it is not a checksum-only check of a fresh public clone. These checks assess implementation, not real-data validity.
+The original pilot used entirely synthetic genotypes and 20 replicates per scenario and sample size. Its results remain in the original `results/` files and the [archived manuscript at commit 5a6e303](https://github.com/Vusumuzi2Mabasa/Multiancestry_GWAS_Bayesian_Comparison/blob/5a6e303/README.md). Its numerical estimates should not be pooled with this study because the data generator and residual-variance treatment changed. The public SHA-256 manifest covers tracked source and result files and can be checked using `python extension/check_public.py` before using saved checkpoints.
 
 ## References
 
-- [Manc-COJO methodological paper](https://doi.org/10.1038/s41588-026-02799-1).
-- [Official Manc-COJO tutorial](https://light156.github.io/multi-ancestry-COJO-docs/tutorial/) and [command options](https://light156.github.io/multi-ancestry-COJO-docs/options/).
-- [Official Manc-COJO source and releases](https://github.com/light156/multi-ancestry-COJO).
-- [MESuSiE](https://doi.org/10.1038/s41588-023-01604-7), a related established Bayesian approach; the custom hierarchy here does not implement this method.
+1. Wang X, Wang Y, Yang J, Visscher PM, Wray NR, Yengo L. *Multiancestry conditional and joint analysis applied to GWAS summary statistics*. Nature Genetics. [DOI](https://doi.org/10.1038/s41588-026-02799-1). Manc-COJO software: [authors' repository](https://github.com/light156/multi-ancestry-COJO).
+2. Rossen J, Shi H, Strober BJ, et al. *MultiSuSiE improves multi-ancestry fine-mapping in All of Us whole-genome sequencing data*. Nature Genetics 58, 67–76 (2026). [DOI](https://doi.org/10.1038/s41588-025-02450-5).
+3. The 1000 Genomes Project Consortium. *A global reference for human genetic variation*. Nature 526, 68–74 (2015). [DOI](https://doi.org/10.1038/nature15393).
+4. Wang G, Sarkar A, Carbonetto P, Stephens M. *A simple new approach to variable selection in regression, with application to genetic fine mapping*. Journal of the Royal Statistical Society Series B 82, 1273–1300 (2020). [DOI](https://doi.org/10.1111/rssb.12388).

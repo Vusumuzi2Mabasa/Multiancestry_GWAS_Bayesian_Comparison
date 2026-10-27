@@ -1,0 +1,11 @@
+{
+  "cells": 16,
+  "calibration_datasets": 4800,
+  "held_out_null_datasets": 3200,
+  "alternative_datasets": 3200,
+  "evaluation_method_fits": 25600,
+  "variant_results": 204800,
+  "all_counts_pass": true,
+  "nonconverged_evaluation_fits": 0,
+  "calibration_and_evaluation_seed_namespaces_disjoint": true
+}

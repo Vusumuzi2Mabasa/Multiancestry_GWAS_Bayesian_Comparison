@@ -1,0 +1,32 @@
+[
+  {
+    "file": "README_phase3_callset_20150220",
+    "url": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/README_phase3_callset_20150220",
+    "bytes": 6754,
+    "sha256": "46c6918d394069020997770c9581afc34a1fca26dc0480ad4f566407b065d573"
+  },
+  {
+    "file": "README_known_issues_20200731",
+    "url": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/README_known_issues_20200731",
+    "bytes": 3514,
+    "sha256": "f82c3c2696f2db8a5ca2326ff8e8d4c7e991beae6ce44708fcb0fc1e3cdf5506"
+  },
+  {
+    "file": "README_integrated_call_samples_v3.20250704.ALL",
+    "url": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/README_integrated_call_samples_v3.20250704.ALL",
+    "bytes": 322,
+    "sha256": "5c57cba9f38560182267e040ed20d5d1babff88a9d12b244819aeadb95fe00ad"
+  },
+  {
+    "file": "integrated_call_samples_v3.20130502.ALL.panel",
+    "url": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/integrated_call_samples_v3.20130502.ALL.panel",
+    "bytes": 55156,
+    "sha256": "b4023dc6ee2d62ee89c8d4d347db4d348e65518d66d346574cdae7a4bbd76858"
+  },
+  {
+    "file": "ALL.chr22.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz",
+    "url": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr22.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz",
+    "bytes": 205612353,
+    "sha256": "a90c16c4ff2b3196476d506ae13cb3047fae8670163c7c932c4b0239aef3daf5"
+  }
+]

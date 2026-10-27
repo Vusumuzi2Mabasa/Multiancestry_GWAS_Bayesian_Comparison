@@ -1,0 +1,41 @@
+{
+  "python": "3.12.14",
+  "platform": "Windows",
+  "packages": {
+    "numpy": "2.3.5",
+    "scipy": "1.18.1",
+    "numba": "0.68.0",
+    "tqdm": "4.70.1",
+    "matplotlib": "3.11.2",
+    "MultiSuSiE": "1.0"
+  },
+  "multisusie_commit": "a89e091d45297d983118438f116c3eb5bc1219ed",
+  "manc_binary_sha256": "4cab4da95e481c5f35bb365a721c696b21ce3aa07c2c32e6e01ab45feb51f3f9",
+  "file_sha256": {
+    "extension/design.json": "6aade304fe1fbe2ee3a2369ac56278dc7e9d51228fb6fae9b8e5d3af4dd827bc",
+    "extension/benchmark.py": "09fa7f3c95a6a53a1f5f33a8d2d68e95b5323c4860fae57ce3b1edca233d9297",
+    "scripts/simulate_compare.py": "e2d91a4ee720be99c7b62832027619015042adcae6101ab78817c150dc532848",
+    "extension/prepare_reference.py": "00178d381b8e538891a4eb36dae01fdf0e2294a9e2a6b20198661122060711ee",
+    "extension/reference_downloads.json": "b09f0b59545177382d940480be66a300c0c0c769253c0f8c9d205df4e260d88c"
+  },
+  "source_permission": "1000 Genomes Phase 3 no embargo after final publication; cite consortium",
+  "source_permission_url": "https://www.internationalgenome.org/IGSR_disclaimer/",
+  "references": [
+    {
+      "method": "MultiSuSiE",
+      "doi": "10.1038/s41588-025-02450-5",
+      "source": "https://github.com/jordanero/MultiSuSiE",
+      "license": "GPL-3.0"
+    },
+    {
+      "method": "Manc-COJO",
+      "doi": "10.1038/s41588-026-02799-1",
+      "source": "https://github.com/light156/multi-ancestry-COJO",
+      "version": "1.1.0"
+    },
+    {
+      "data": "1000 Genomes Phase 3",
+      "doi": "10.1038/nature15393"
+    }
+  ]
+}

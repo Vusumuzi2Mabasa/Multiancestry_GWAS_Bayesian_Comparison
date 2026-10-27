@@ -21,6 +21,7 @@ checksums.sha256
 
 # Temporary files and credentials
 tmp/
+.venv/
 .env
 .Renviron
 .Rhistory

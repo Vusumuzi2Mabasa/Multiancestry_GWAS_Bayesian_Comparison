@@ -1,0 +1,104 @@
+{
+  "all_passed": true,
+  "donor_overlap": 0,
+  "bed_alt_dosage_roundtrip": true,
+  "reference_ld_roundtrip": true,
+  "pools": [
+    {
+      "locus": 0,
+      "pool": "CEU_reference",
+      "haplotypes": 80,
+      "minimum_maf": 0.05,
+      "minimum_eigenvalue": 0.011355800881440116,
+      "haplotype_array_sha256": "daffa3430ac82d567fc1500a50e88ffad16c4d94789e923b52929e6606475a22"
+    },
+    {
+      "locus": 0,
+      "pool": "CEU_study",
+      "haplotypes": 118,
+      "minimum_maf": 0.05084745762711865,
+      "minimum_eigenvalue": 0.026163444649970096,
+      "haplotype_array_sha256": "1aff5ee91c75f2ca9b8a80092725886602b45453e7ea08c299bce89c44d473d2"
+    },
+    {
+      "locus": 0,
+      "pool": "YRI_reference",
+      "haplotypes": 80,
+      "minimum_maf": 0.05,
+      "minimum_eigenvalue": 0.16348662850750287,
+      "haplotype_array_sha256": "f00ef285f8fafb202e9343746e427076291755cf9554102ddb1744328efde2c0"
+    },
+    {
+      "locus": 0,
+      "pool": "YRI_study",
+      "haplotypes": 136,
+      "minimum_maf": 0.08823529411764706,
+      "minimum_eigenvalue": 0.15507992348976204,
+      "haplotype_array_sha256": "429a03b7b5c5922cc69e26e3746df285ee4ed959e0ed52433f5ebb692e103d1f"
+    },
+    {
+      "locus": 0,
+      "pool": "LWK_reference",
+      "haplotypes": 80,
+      "minimum_maf": 0.1,
+      "minimum_eigenvalue": 0.10596138215299238,
+      "haplotype_array_sha256": "5394c9a2b4de180867e1f8bb92a4fcb930c844565d8b7dc6b897df399d6a019a"
+    },
+    {
+      "locus": 0,
+      "pool": "LWK_study",
+      "haplotypes": 118,
+      "minimum_maf": 0.06779661016949153,
+      "minimum_eigenvalue": 0.1823432215379815,
+      "haplotype_array_sha256": "421cc5e2d5771a5ca66b646f60f0db2409c78c737d5f0e245a4d5ea2e8fe2bae"
+    },
+    {
+      "locus": 1,
+      "pool": "CEU_reference",
+      "haplotypes": 80,
+      "minimum_maf": 0.0625,
+      "minimum_eigenvalue": 0.02853318893433744,
+      "haplotype_array_sha256": "d948b64630f037413976498db8729beba2e2641215251ef9dcf8643470f3ddab"
+    },
+    {
+      "locus": 1,
+      "pool": "CEU_study",
+      "haplotypes": 118,
+      "minimum_maf": 0.11864406779661017,
+      "minimum_eigenvalue": 0.07986455431180495,
+      "haplotype_array_sha256": "6a44f251b0476c6f814784c8efe08f387239f4ca0192ad763b55a43cfd05a752"
+    },
+    {
+      "locus": 1,
+      "pool": "YRI_reference",
+      "haplotypes": 80,
+      "minimum_maf": 0.05,
+      "minimum_eigenvalue": 0.0669466775388851,
+      "haplotype_array_sha256": "4d95a1e2a609ce9f958c802c33fb5c7525ce2616a268d983d9afb6a8414f3e2f"
+    },
+    {
+      "locus": 1,
+      "pool": "YRI_study",
+      "haplotypes": 136,
+      "minimum_maf": 0.051470588235294115,
+      "minimum_eigenvalue": 0.16005301086910526,
+      "haplotype_array_sha256": "547b12a1811e12d0eb3432130eb2009c2d2f074d77973a697d60d59c264192ff"
+    },
+    {
+      "locus": 1,
+      "pool": "LWK_reference",
+      "haplotypes": 80,
+      "minimum_maf": 0.1,
+      "minimum_eigenvalue": 0.11014348054754228,
+      "haplotype_array_sha256": "1d98fd35e18cdc10f338362e8a6052d2ac06e52c24957d4fe3f3ca86f911800c"
+    },
+    {
+      "locus": 1,
+      "pool": "LWK_study",
+      "haplotypes": 118,
+      "minimum_maf": 0.059322033898305086,
+      "minimum_eigenvalue": 0.09620748368705534,
+      "haplotype_array_sha256": "77ddb7e1c05f8e6eee9b60785ba48372cd820c2900e671f4d4b6c6c5bc935aba"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "cell_id": 10,
+  "design_code_sha256": "54d8602c8d3700ea6d7f2aa1533e9514a6956b40494616ffdf46b5cd1ee5a13b",
+  "evaluation_datasets": 400,
+  "calibration_datasets": 300,
+  "threshold_sha256": "73fbabed5d9753973a2667e28c2f5b4c51100dc4c869674b0c5be0f3ad173fa0"
+}

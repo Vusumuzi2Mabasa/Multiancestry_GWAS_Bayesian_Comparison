@@ -1,0 +1,12 @@
+{
+  "author": "Vusumuzi Mabasa",
+  "source_sha256": "243570e7d14e71534a984b10e513f9138062726600171376e49e42bd6d64c74b",
+  "native_math_objects": 48,
+  "figures": 4,
+  "tables": 5,
+  "numerical_tables_match": true,
+  "interpretations_before_figures": true,
+  "simulation_label": true,
+  "portable_links": true,
+  "visual_review": "See render audit after page-by-page inspection"
+}
